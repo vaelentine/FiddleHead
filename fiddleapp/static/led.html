@@ -1,0 +1,47 @@
+<head>
+  <style scoped>
+    :root {
+      --led-size: 60px;
+      --t-width: calc(0.8 * var(--led-size));
+      --t-height: calc(0.6 * var(--led-size))
+    }
+
+    .led {
+      background-image: -webkit-linear-gradient(top, #3e0400 0%, #b5200a 50%, #cf552e 100%);
+      border-radius: var(--led-size);
+      width: var(--led-size);
+      height: var(--led-size);
+      box-shadow: 0px 0px 2px black;
+    }
+
+    .led:after {
+      display: inline-block;
+      content: '';
+      margin-left: 10%;
+      margin-right: 10%;
+      width: var(--t-width);
+      height: var(--t-height);
+      border-radius: 50%;
+      background-image: -webkit-linear-gradient(top, rgba(232, 159, 159, 0.6) 0%, rgba(209, 199, 199, 0.05) 100%);
+    }
+
+    .led:hover {
+      filter: brightness(2.4);
+      content: 'a';
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="led"></div>
+  </div>
+
+  <script>
+    Vue.component('led', {
+      template: '<span class="led" v-bind:class="{active:on}"></span>',
+  })
+  </script>
+</body>
+
+</html>

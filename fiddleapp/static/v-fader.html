@@ -1,0 +1,184 @@
+<head>
+  <script src="led.html"></script>
+  <style scoped>
+
+    .range-slider {
+      display: inline-block;
+      width: 40px;
+      position: relative;
+      text-align: center;
+      /* height: 300px; */
+      /* max-height: 100%; */
+    }
+
+    .range-slider:before {
+      position: absolute;
+      top: -2em;
+      left: .5em;
+      content: attr(data-slider-value) "%";
+      /* color: white; */
+      font-size: 90%;
+    }
+
+    .range-slider__thumb {
+      position: absolute;
+      left: 10px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      background: rgb(89, 104, 119);
+      color: rgb(34, 235, 255);
+      font-size: 0.5em;
+      box-shadow: 0 0 0 2px #2a2a40;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .range-slider__bar {
+      left: 16px;
+      bottom: 0;
+      position: absolute;
+      background: linear-gradient(rgb(34, 235, 255), rgb(107, 117, 255));
+      pointer-events: none;
+      width: 8px;
+      border-radius: 10px;
+    }
+
+    .range-slider input[type=range][orient=vertical] {
+      position: relative;
+      margin: 0;
+      /* height: 100%; */
+      width: 100%;
+      display: inline-block;
+      position: relative;
+      writing-mode: bt-lr;
+      -webkit-appearance: slider-vertical;
+    }
+
+    .range-slider input[type=range][orient=vertical]::-webkit-slider-runnable-track,
+    .range-slider input[type=range][orient=vertical]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+    }
+
+    .range-slider input[type=range][orient=vertical]::-webkit-slider-runnable-track {
+      border: 6px solid black;
+      background: #343440;
+      width: 8px;
+      border-radius: 10px;
+    }
+
+    /* .range-slider input[type=range][orient=vertical]::-moz-range-track {
+      background: #343440;
+      width: 8px;
+      border-color: #343440;
+      border-radius: 10px;
+      box-shadow: 0 0 0 2px #3D3D4A;
+    } */
+
+    /* .range-slider input[type=range][orient=vertical]::-ms-track {
+      border: none;
+      background: #343440;
+      width: 8px;
+      /* border-color: #343440; */
+      /* border-radius: 10px; */
+      /* box-shadow: 0 0 0 2px #3D3D4A; */
+      /* color: transparent; */
+      /* height: 100%; */
+    /* } */
+
+    /* .range-slider input[type=range][orient=vertical]::-ms-fill-lower,
+    .range-slider input[type=range][orient=vertical]::-ms-fill-upper,
+    .range-slider input[type=range][orient=vertical]::-ms-tooltip {
+      display: none;
+    } */
+
+    /* .range-slider input[type=range][orient=vertical]::-webkit-slider-thumb {
+      width: 30px;
+      height: 30px;
+      opacity: 0;
+    } */
+
+    /* .range-slider input[type=range][orient=vertical]::-moz-range-thumb {
+      width: 30px;
+      height: 30px;
+      opacity: 0;
+    } */
+
+    /* .range-slider input[type=range][orient=vertical]::-ms-thumb {
+      width: 30px;
+      height: 30px;
+      opacity: 0;
+    } */
+
+  </style>
+
+</head>
+
+<body>
+  <!--- <div class="container"> -->
+    <div class="range-slider">
+      <input type="range" orient="vertical" min="0" max="100" />
+      <div class="range-slider__bar"></div>
+      <div class="range-slider__thumb"></div>
+    </div>
+
+
+
+    <div class="range-slider">
+      <input type="range" orient="vertical" min="0" max="100" />
+      <div class="range-slider__bar"></div>
+      <div class="range-slider__thumb"></div>
+    </div>
+  <!--- </div> -->
+
+  <script>
+    var app = function() {
+
+      function updateSlider(element) {
+        if (element) {
+          var parent = element.parentElement,
+            lastValue = parent.getAttribute('data-slider-value');
+
+          if (lastValue === element.value) {
+            return; // No value change, no need to update then
+          }
+
+          parent.setAttribute('data-slider-value', element.value);
+          var $thumb = parent.querySelector('.range-slider__thumb'),
+            $bar = parent.querySelector('.range-slider__bar'),
+            pct = element.value * ((parent.clientHeight - $thumb.clientHeight) / parent.clientHeight);
+
+          $thumb.style.bottom = pct + '%';
+          $bar.style.height = 'calc(' + pct + '% + ' + $thumb.clientHeight / 2 + 'px)';
+          $thumb.textContent = element.value + '%';
+        }
+      }
+      return {
+        updateSlider: updateSlider
+      };
+    }();
+
+    (function initAndSetupTheSliders() {
+      var inputs = [].slice.call(document.querySelectorAll('.range-slider input'));
+      inputs.forEach(function(input) {
+        return input.setAttribute('value', '0');
+      });
+      inputs.forEach(function(input) {
+        return app.updateSlider(input);
+      });
+      // Cross-browser support where value changes instantly as you drag the handle, therefore two event types.
+      inputs.forEach(function(input) {
+        return input.addEventListener('input', function(element) {
+          return app.updateSlider(input);
+        });
+      });
+      inputs.forEach(function(input) {
+        return input.addEventListener('change', function(element) {
+          return app.updateSlider(input);
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>

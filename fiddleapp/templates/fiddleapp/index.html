@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta charset="utf-8" />
+    <meta name=“description” content="A Sequencer/Synthesizer" />
+    <meta name="author" content="Magdalene Geise" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 3rd party -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://tonejs.github.io/build/Tone.min.js"></script>
+
+    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+
+    {% load static %}
+    <!-- CSS styling components -->
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/bt.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/led.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/v-fader.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/transport.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/sequencer.css'%}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/slider.css'%}" />
+    <title>Fiddlehead - Music composer</title>
+  </head>
+
+  <body>
+    <div id="app"></div>
+
+    <!-- JS Components -->
+    <script src="{% static "/main.js" %}"></script>
+    <script src="{% static "/components/app.js" %}"></script>
+    <script src="{% static "/components/led.js" %}"></script>
+    <script src="{% static "/components/slider.js" %}"></script>
+    <script src="{% static "/components/footer.js" %}"></script>
+    <script src="{% static "/components/cell.js" %}"></script>
+    <!-- <script src="{% static "/components/transport.js" %}"></script> -->
+    <!-- <script src="{% static "/components/sequencer.js" %}"></script> -->
+  </body>
+
+</html>

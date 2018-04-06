@@ -1,0 +1,64 @@
+.range-slider {
+  display: inline-block;
+  width: 40px;
+  position: relative;
+  text-align: center;
+  /* height: 300px; */
+  /* max-height: 100%; */
+}
+
+.range-slider:before {
+  position: absolute;
+  top: -2em;
+  left: .5em;
+  content: attr(data-slider-value) "%";
+  /* color: white; */
+  font-size: 90%;
+}
+
+.range-slider__thumb {
+  position: absolute;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  background: rgb(89, 104, 119);
+  color: rgb(34, 235, 255);
+  font-size: 0.5em;
+  box-shadow: 0 0 0 2px #2a2a40;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.range-slider__bar {
+  left: 16px;
+  bottom: 0;
+  position: absolute;
+  background: linear-gradient(rgb(34, 235, 255), rgb(107, 117, 255));
+  pointer-events: none;
+  width: 8px;
+  border-radius: 10px;
+}
+
+.range-slider input[type=range][orient=vertical] {
+  position: relative;
+  margin: 0;
+  /* height: 100%; */
+  width: 100%;
+  display: inline-block;
+  position: relative;
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+}
+
+.range-slider input[type=range][orient=vertical]::-webkit-slider-runnable-track,
+.range-slider input[type=range][orient=vertical]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+.range-slider input[type=range][orient=vertical]::-webkit-slider-runnable-track {
+  border: 6px solid black;
+  background: #343440;
+  width: 8px;
+  border-radius: 10px;
+}

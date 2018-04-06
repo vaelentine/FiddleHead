@@ -1,0 +1,117 @@
+.fiddlehead_div {
+  background: repeating-linear-gradient(0deg, rgb(70, 70, 70) 0px, rgb(80, 80, 80) 2px, rgb(80, 50, 50) 3px);
+  margin: auto;
+  width: 70vw;
+  border-radius: 4px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 2px 2px 0px black, inset -2px -4px 0px 0.1px;
+}
+
+.sequencer_div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+ /* background-color: white; */
+
+}
+.sequence_settings {
+  display: flex;
+  flex-direction: row;
+}
+.matrix_div {
+  display: flex;
+}
+.leds_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 20px;
+}
+.each_led_container {
+  /* border: 2px solid black; */
+  width: 33px;
+}
+.beat_container {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.cell {
+  margin: 1px;
+  /* background-image: -webkit-linear-gradient(top, #3e0400 0%, #b5200a 50%, #cf552e 100%); */
+
+  background:radial-gradient(rgb(140, 129, 87),rgb(131, 133, 64));
+  filter: brightness(0.5);
+  z-index: 10;
+  /* color: white; */
+  text-align: center;
+  width: 50px;
+  height: 16px;
+  border: 2px solid black;
+  box-shadow: 2px 2px  black, inset -1px -2px 2px 0.1px;
+}
+.on {
+  filter: brightness(2);
+  background-color: green;
+  color: black;
+  position: relative;
+  box-shadow: 0px 0px  black, inset -1px -2px 2px 0.1px;
+  top: 2px;
+  left: 2px;
+}
+.beat_prop_select {
+  display: flex;
+  flex-direction: row;
+  color: white;
+  text-align: center;
+  /* display: flex; */
+}
+.select {
+
+  text-align: center;
+  border: 1px solid black;
+  color: black;
+  /* background-color: orange; */
+  height: 16px;
+  justify-content: center;
+  /* width: 40px; */
+  border: 2px solid black;
+  font-family: monospace;
+  text-shadow: 0px 1px 0px grey;
+  /* font-weight: bold; */
+  background: rgba(60, 60, 200, 0.9);
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  /* border: 1px outset black; */
+  box-shadow: 2px 2px  black, inset -1px -2px 2px 0.1px;
+}
+.sequence_settings {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.sequence_settings:hover {
+  filter: brightness(1.2);
+}
+
+.sequence_settings:active {
+  position: relative;
+  box-shadow: 0px 0px  black, inset -1px -2px 2px 0.1px;
+  top: 2px;
+  left: 2px;
+  /* border: 1px outset rgb(79, 79, 83); */
+}
+
+.active {
+  background-color: green;
+}
+.node_container {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid black;
+}
