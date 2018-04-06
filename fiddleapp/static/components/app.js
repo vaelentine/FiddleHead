@@ -7,8 +7,6 @@ window.onload = function () {
       template:
       `<div class="fiddlehead_div">
 
-
-
         <div class="transport_module_div">
           <div class="digital_display_div inset">
             <div class="song_header">
@@ -164,7 +162,7 @@ window.onload = function () {
         instrument: synth,
         currentBeatData: '',
         synthSettings: {
-          Oscillator: {
+          Oscillatorß: {
             waveform: {
               types: ['sine', 'triangle', 'square', 'sawtooth', 'pwm'],
               min: 0,
