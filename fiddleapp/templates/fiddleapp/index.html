@@ -10,27 +10,32 @@
     <!-- 3rd party -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://tonejs.github.io/build/Tone.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
     <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
 
     {% load static %}
     <!-- CSS styling components -->
-    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+
+    <link rel="stylesheet" type="text/css" href="{% static '/components/mode_buttons.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/view_screen.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/trans_bts.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/components/options_div.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static '/components/bt.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static '/components/led.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static '/components/v-fader.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static '/components/transport.css' %}" />
+    <!-- <link rel="stylesheet" type="text/css" href="{% static '/components/v-fader.css' %}" /> -->
     <link rel="stylesheet" type="text/css" href="{% static '/components/sequencer.css'%}" />
-    <link rel="stylesheet" type="text/css" href="{% static '/components/slider.css'%}" />
+    <!-- <link rel="stylesheet" type="text/css" href="{% static '/components/slider.css'%}" /> -->
     <title>Fiddlehead - Music composer</title>
   </head>
 
   <body>
+    {% csrf_token %}
     <div id="app"></div>
 
     <!-- JS Components -->
     <script src="{% static "/main.js" %}"></script>
     <script src="{% static "/components/app.js" %}"></script>
+    <script src="{% static "/components/viewscreen.js" %}"></script>
     <script src="{% static "/components/led.js" %}"></script>
     <script src="{% static "/components/slider.js" %}"></script>
     <script src="{% static "/components/footer.js" %}"></script>

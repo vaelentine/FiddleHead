@@ -1,0 +1,23 @@
+.play_bt_outer {
+
+  /* margin: 25% auto; */
+  width: 5em;
+  height: 5em;
+  background-color: rgb(100, 100, 100);
+  cursor: pointer;
+  border: 2px solid #000;
+  border-radius: 50%;
+}
+.play_bt_outer:hover {
+  background-color: rgba(0, 0, 0, .5);
+}
+.play_bt_inner {
+  margin: 0 auto;
+  top: 25%;
+  position: relative;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 1.5em 0 1.5em 3em;
+  border-color: transparent transparent transparent #000;
+}

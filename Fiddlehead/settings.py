@@ -27,8 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'vaelentine.pythonanywhere.com',
-    'localhost'
-
+    'localhost',
+    'http://127.0.0.1'
 ]
 
 

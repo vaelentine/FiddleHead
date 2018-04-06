@@ -2,286 +2,154 @@ window.onload = function () {
 //parent component
   const vm = new Vue({
       el: '#app',
-      components: {
-      },
       template:
       `<div class="fiddlehead_div">
+        <view_screen
+          :message="message"
+          :song_name="song_name"
+          :number_of_beats="transport.beatsPerMeasure"
+          :current_beat="current_beat"
+          :current_measure="measureNumber"
+          :preset_name="preset_name"
+          :total_measures="numberOfMeasures"
+          :beats_per_minute='transport.bpm'
+          :play_time="undefined"
+          :mode_selected="mode"
+          :view_selected="currentView"
+          :transport_state="song_state"/>
+          <div class="mode_selector">
+            <label class="ui_info">mode select</label>
+            <div v-for="selection in modes" class="mode_bt" @click="mode=selection" :class="{active:mode===selection}">{{selection}}</div>
+          </div>
+          <div class="options_div">
 
-
-
-        <div class="transport_module_div">
-          <div class="digital_display_div inset">
-            <div class="song_header">
-              <div class="inline" id="song_name"> {{ songName }}</div>
-              <div> </div>
-              <div class="inline" id="song_pos">{{ measureNumber }}:{{ currentBeat }}</div>
-              <div class="inline"> / </div>
-              <div class="inline" id="song_end"> {{measuresPerSong}} </div>
-              <div> </div>
-              <div class="inline" id="seq_name">sequence name</div>
-              <div class="inline" id="seq_number"> sequence number </div>
-              <div class="inline"> / </div>
-              <div class="inline" id="seq_total"> last sequence </div>
-            </div>
-            <div class="arrangement_cont">
-              <div class="timeline">
-                <div class="progress">
-                  <div class="seq_disp"></div>
+          <div class="mode_view">
+            <div v-if="mode==='Sequence'">
+              <div class="sequence_length_div">
+                <label> sequence length: </label>
+                <div v-for="n of sequence.maxBeatsAllowed"
+                :beat_num="n+1" :class="{on:sequence.beatsPerMeasure===n}" class="cell" @click="sequence.beatsPerMeasure=n">
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="sequence_settings">
-            <div class="range_container">
-              <input class="beats" type="range" min="1" :max="maxBeatsAllowed" step="1" v-model.number="beatsPerMeasure" @change="createNotes"/>
-              <div class="info_text">beats: {{ beatsPerMeasure }}</div>
-            </div>
-            <div class="range_container">
-              <input class="bpm_sl" type="range" :min="bpmMin" :max="bpmMax" step="1" v-model.number="bpm"/>
-              <div class="info_text"> bpm: {{ bpm }}</div>
-            </div>
-          </div>
-          <div class="seq_led_div">
-            <div class="leds_container">
-              <div v-for="beat of beatsPerMeasure" :beat_number="beat + 1" class="each_led_container">
-                <led :beat_number="beat + 1" :active="beat==currentBeat" />
+
+              <div class="view_select" v-for="view in sequence.views" @click="currentView=view">{{ view }}</div>
+
+            <div class="matrix_div">
+              <div v-if="currentView==='notes'"
+              v-for="beat of sequence.beatsPerMeasure" class="beat_container" :beat="beat + 1">
+                <div class="cell" v-for="note in sequence.notes" :class="{on:mutequery(note, beat)}" :note_name="note" :beat_number="beat + 1" @click="toggleNote(beat, note)">{{ note }}</div>
+              </div>
+
+              <div v-if="currentView==='durations'" v-for="beat of sequence.beatsPerMeasure" class="beat_container" :beat="beat + 1">
+                <div class="cell" v-for="duration in sequence.durations" :class="{on:sequence.beats[beat-1].duration===duration}" :duration_name="duration" :beat_number="beat + 1" @click="sequence.beats[beat-1].duration=duration">{{ duration }}</div>
+
+              </div>
+              <div v-if="currentView==='dynamics'" v-for="beat of sequence.beatsPerMeasure" class="beat_container" :beat="beat + 1">
+                <div class="cell" v-for="dynamic in sequence.dynamics" :class="{on:sequence.beats[beat-1].velocity===sequence.dynamics.indexOf(dynamic)}" :dynamic_name="dynamic" :beat_number="beat + 1" @click="sequence.beats[beat-1].velocity=sequence.dynamics.indexOf(dynamic)">{{ dynamic }}</div>
+              </div>
+
+              <div v-if="currentView==='octaves'" v-for="beat of sequence.beatsPerMeasure" class="beat_container" :beat="beat + 1">
+
+                <div class="cell" v-for="octave in sequence.octaves" :class="{on:sequence.beats[beat-1].octave===octave}" :octave_name="octave" :beat_number="beat + 1" @click="sequence.beats[beat-1].octave=octave">{{ octave }}</div>
               </div>
             </div>
-          </div>
 
-          <div class="bt_cont">
-            <div class="slot">
-              <div class="tr_bt inline" id="prev_bt" v-on:click=seekPrev() > ◅◅ </div>
-              <div class="tr_bt inline" id="play_bt" v-on:click=play()> ► </div>
-              <div class="tr_bt inline" id="pause_bt" v-on:click=pause() > ❙❙ </div>
-              <div class="tr_bt inline" id="stop_bt" v-on:click=stop() > ■ </div>
-              <div class="tr_bt inline" id="next_bt" v-on:click=seekNext() > ▻▻ </div>
-              <div class="tr_bt inline" id="next_bt" v-on:click=seekNext() > + </div>
-              <div class="tr_bt inline" id="next_bt" v-on:click=seekNext() > del </div>
-              <div class="tr_bt inline" id="save_bt" v-on:click=seekNext() > 💾  </div>
-              <div class="tr_bt inline" id="_bt" v-on:click=seekNext() > 📁 </div>
-
-            </div>
+            <div v-if="mode==='Arrangement'">
+              <div class="arrangement_length_div">
+                <label> arrangement length: </label>
+                <div v-for="n of arrangement.maxMeasuresAllowed"
+                :measure_num="n+1" :class="{on:arrangement.numberOfMeasures===n}" class="cell" @click="arrangment.numberOfMeasures=n">
+                </div>
+              </div>
 
 
-
-        </div>
-        <div class="sequencer_div">
-          <div class="beat_prop_select">
-            <div v-for="selected in matrices"
-              class="matrix select"  @click="matrix=selected" :class="{active:matrix===selected}">{{selected}}</div>
-          </div>
-
-
-          <div class="matrix_div" >
-            <div v-for="beat of beatsPerMeasure" v-if="matrix==='notes'" :key="beat.id" class="beat_container" :beat="beat + 1">
-              <div
-                class="cell"
-                v-for="note in notes"
-                :class="{on:mutequery(note, beat)}"
-                :key="note.id"
-                :note_name="note"
-                :beat_number="beat + 1"
-                @click="toggleNote(beat, note)"
-                >{{note}}</div>
-            </div>
-
-            <div v-for="n of beatsPerMeasure"   v-if="matrix==='octave'"
-            :key="n.id" class="beat_container" :beat="n + 1">
-              <div
-                class="cell"
-                v-for="octave in octaves"
-                :class="{on:octQuery(n-1, octave)}"
-                :beat_number="n + 1"
-                @click="sequence[n-1].octave=octave"
-                >{{octave}}</div>
-            </div>
-
-            <div v-for="n of beatsPerMeasure"   v-if="matrix==='velocity'"
-            :key="n.id" class="beat_container" :beat="n + 1">
-              <div
-                class="cell"
-                v-for="vel in velocities"
-                :class="{on:sequence[n-1].velocity===vel}"
-                :beat_number="n + 1"
-                @click="sequence[n-1].velocity=vel"
-                >{{vel}}</div>
-            </div>
-
-            <div v-for="n of beatsPerMeasure"   v-if="matrix==='env amount'"
-            :key="n.id" class="beat_container" :beat="n + 1">
-              <div
-                class="cell"
-                v-for="env in velocities"
-                :class="{on:sequence[n-1].envelopeAmount===env}"
-                :beat_number="n + 1"
-                @click="sequence[n-1].envelopeAmount=env"
-                >{{env}}</div>
-            </div>
-
-          </div>
-          <div v-if="matrix==='synthesizer'" class="synth_container">
-            <div v-for="(features, node) in synthSettings" class="node_container">
-              <div>{{ node }}</div>
-              <div v-for="(value, controller) of features" class="range_container">
-                <div>{{ controller }}</div>
-                <input type="range" :min="value.min" :max="value.max" :step="value.step" v-model.number="value.value" @change="updateSynth"/>
-                <div>{{ value.value }}</div>
+              <div class="matrix_div">
+                <div v-for="measure of arrangement.measuresPerSong" class="measure_container" :measure="measure + 1">
+                  <div class="cell" v-for="sequence in arrangment.sequences" :class="{on:arrangment.measure==arrangment.sequence}" :sequence_name="sequence.sequenceName" :sequence_number="sequence + 1" @click="arrangement.sequence[sequence]">{{ sequence.sequenceName }}</div>
+                </div>
+              </div>
               </div>
             </div>
-          </div>
+            </div>
+          <div v-if="mode==='Synthesizer'">
+            <div class="oscillator_div">
+              <label> oscillator: {{ synthSettings.Oscillator.type }}</label>
+              <div v-for="type in synthSettings.Oscillator.types"
+              :class="{on:synthSettings.Oscillator.type===type}" class="cell" @click="synthSettings.Oscillator.type=type"> {{ type }}
+              </div>
+            </div>
             </div>
           </div>
         </div>
       </div>`,
       data: {
-        matrix: '',
-        matrices: ['notes', 'octave', 'velocity', 'env amount', 'synthesizer'],
-        bpmMax: 999,
-        bpmMin: 60,
-        maxBeatsAllowed: 16,
-        songName: 'untitled',
-        measuresPerSong: 1,
-        beatsPerMeasure: 8,
+        song_name: 'untitled',
+        message:'message',
+        mode: 'Sequence',
+        currentView: 'notes',
+        modes: ['Sequence', 'Arrangement', 'Synthesizer', 'User'],
+        transport: { bpmMax: 999, bpmMin: 60, bpm: 120 },
+        song_state: 'stopped',
+        playing: false,
         measureNumber: 1,
-        bpm: 120,
-        playing: false,
-        currentBeat: 1,
-        subdivision: 1,
-        maxBeatsPerMeasure: 16,
-        bpm: 150,
-        arrangement:[],
-        sequence:[],
-        playing: false,
-        sequenceName: 'sequence',
-        rootNoteIndex: 3,
-        scaleTypes: ['Chromatic', 'Major', 'Minor'],
-        notes: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
-        oscTypes: ['sine', 'triangle', 'square', 'sawtooth', 'pwm'],
-        octaves: [0,1,2,3,4,5,6,7,8],
-        velocities: [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
-        scaleTypeIndex: 0,
-        instrument: synth,
-        currentBeatData: '',
+        current_beat: 1,
+        preset_name: 'none',
+        arrangement: {
+          viewName: 'Arrangement',
+          numberOfMeasures: 1,
+          maxMeasuresAllowed: 16,
+          views:['Arrangement'],
+
+          measures:[],
+          sequences:[],
+        },
+        sequence: {
+          viewName: '',
+          sequenceNumber: 1,
+          views: ['notes', 'durations', 'dynamics', 'octaves'],
+          currentBeatData: '',
+          beats:[],
+          sequenceName: 'None',
+          maxBeatsAllowed: 16,
+          maxBeatsPerMeasure: 16,
+          beatsPerMeasure: 8,
+          notes: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
+          durations: ['1m', '2n', '4n', '8n', '16n'],
+          octaves: [0,1,2,3,4,5,6,7,8],
+          dynamics: ['pp','p', 'mp', 'mf', 'f', 'ff'],
+        },
         synthSettings: {
-          Oscillator: {
-            waveform: {
-              types: ['sine', 'triangle', 'square', 'sawtooth', 'pwm'],
-              min: 0,
-              max: 4,
-              step: 1,
-              value: 0,
-            },
-          },
-          amplifier: {
-            Attack: {
-              min: 0.01,
-              max: 10,
-              step: 0.5,
-              value: 0.5,
-            },
-            Decay: {
-              min: 0.01,
-              max: 1,
-              step: 0.1,
-              value: 0.5,
-            },
-            Sustain: {
-              min: 0.01,
-              max: 1,
-              step: 0.01,
-              value: 0.5,
-            },
-            Release: {
-              min: 0.01,
-              max: 10,
-              step: 0.5,
-              value: 0.5,
-            },
+          PresetName: 'None',
+          Presets: [],
+          Oscillator: { type: '', types: ['sine', 'triangle', 'square', 'sawtooth', 'pwm']},
+          Amplifier: {
+            Attack: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: synth.envelope.attack},
+            Decay: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: synth.envelope.attack},
+            Sustain: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: synth.envelope.attack},
+            Release: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: synth.envelope.release},
           },
           Filter: {
-            Attack: {
-              min: 0.01,
-              max: 10,
-              step: 0.5,
-              value: 0.5,
-            },
-            Decay: {
-              min: 0.01,
-              max: 10,
-              step: 0.5,
-              value: 0.5,
-            },
-            Sustain: {
-              min: 0.01,
-              max: 1,
-              step: 0.01,
-              value: 0.5,
-            },
-            Release: {
-              min: 0.01,
-              max: 10,
-              step: 0.5,
-              value: 0.5,
-            },
-            // Distortion: {
-            //   min: 0,
-            //   max: 1,
-            //   step: 0.1,
-            //   value: 0,
-            // },
-            Frequency: {
-              min: 60,
-              max: 18000,
-              step: 1,
-              value: 1000,
-            },
-            Quality: {
-              min: 0,
-              max: 1,
-              step: 0.1,
-              value: 0,
-            }
+            Attack: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: synth.envelope.attack},
+            Decay: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: synth.envelope.attack},
+            Sustain: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: synth.envelope.attack},
+            Release: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: synth.envelope.release},
+            Frequency: {min: 60, max: 18000, step: 0.5, value: 1000, source: synth.envelope.release},
+            Resonance: {min: 60, max: 18000, step: 0.5, value: 1000, source: synth.envelope.release},
+          },
+          LFO: {
+            Speed: {},
+            Destination: {},
+            Amount: {},
           },
           Delay: {
-            pPDelTime: {
-              min: 0.5,
-              max: 10,
-              step: 0.5,
-              value: 1,
-              exportTo: p_p_delay.delayTime.value
-            },
-            pPDelFdbk: {
-              min: 0.5,
-              max: 10,
-              step: 0.5,
-              value: 1,
-              exportTo: p_p_delay.feedback.value
-            },
-            pPDelWet: {
-              min: 0,
-              max: 1,
-              step: 0.1,
-              value: 1,
-              exportTo: p_p_delay.wet.value
-            },
+            Time: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: p_p_delay.delayTime.value},
+            Feedback: {min: 0.5, max: 10, step: 0.5, value: 1, source: p_p_delay.feedback.value},
+            Amount: {min: 0.5, max: 10, step: 0.5, value: 1, source: p_p_delay.wet.value}
           },
-          reverb: {
-            verbSize: {
-              min: 0,
-              max: 1,
-              step: 0.1,
-              value: 0,
-              exportTo: reverb.roomSize.value
-            },
-            verbWet: {
-              min: 0,
-              max: 1,
-              step: 0.1,
-              value: 0,
-              exportTo: reverb.wet.value
-            },
-          },
+          Reverb: {
+            Size: {min: 0.01, max: 10, step: 0.5, value: 0.5, source: reverb.roomSize.value},
+            Amount: {min: 0, max: 1, step: 0.1, value: 0, source: reverb.wet.value}
+          }
         }
       },
       methods: {
@@ -290,13 +158,13 @@ window.onload = function () {
           if (playing) {
             let timer = setTimeout( function () {
               vm.update_clock();
-              vm.currentBeat += 1;
-              if (vm.currentBeat > vm.beatsPerMeasure) {
+              vm.current_beat += 1;
+              if (vm.current_beat > vm.sequence.beatsPerMeasure) {
                 vm.measureNumber + 1;
-                vm.currentBeat = 1;
+                vm.current_beat = 1;
                 vm.measureNumber = vm.measureNumber % vm.measuresPerSong;
               }
-              vm.currentBeatData = vm.sequence[vm.currentBeat - 1]
+              vm.currentBeatData = vm.sequence[vm.current_beat - 1]
               if (vm.currentBeatData.on) {
                 vm.playNote(vm.currentBeatData)
               }
@@ -306,9 +174,8 @@ window.onload = function () {
         },
         play() {
           let vm = this;
-          vm.currentBeat = 1;
-          vm.measureNumber = 1;
-          playing = true;
+          vm.current_beat = 1;
+          playing = !playing;
           vm.update_clock()
         },
         pause() {
@@ -316,48 +183,51 @@ window.onload = function () {
         },
         stop() {
           playing = false;
-          currentBeat = 1;
+          current_beat = 1;
         },
         seekPrev() {
-          measureNumber -= measureNumber - 1 % vm.measuresPerSong;
+          measureNumber -= measureNumber - 1 % vm.arrangment.measuresPerSong;
         },
         seekNext() {
-          measureNumber = measureNumber + 1 % vm.measuresPerSong;
+          measureNumber = measureNumber + 1 % vm.arrangment.measuresPerSong;
         },
         createNotes() {
           let vm = this;
-          let seq = vm.sequence;
+          let seq = vm.sequence.beats;
           //popoff extra notes
-          while (seq.length > vm.beatsPerMeasure - 1) {
+          while (seq.length > vm.arrangment.numberOfMeasures - 1) {
             // console.log(seq)
             seq.pop();
           };
           //get notes for the length of the sequence or create a new note
-          for (let i=0; i < vm.beatsPerMeasure; i++) {
+          for (let i=0; i < vm.arrangment.numberOfMeasures; i++) {
             //does note exist?
             if (!seq[i]) {
-              let silentnote= {
-                beat: i + 1,
-                on: false,
-                note: 'C',
-                duration: '8n',
-                octave: 3,
-                velocity: 0,
-                envelopeAmount: 0,
-                noiseGain: 0.5,
-              };
-              seq.push(silentnote);
+              let new_sequence= {
+                  viewName: '',
+                  sequenceNumber: i,
+                  views: ['notes', 'durations', 'dynamics', 'octaves'],
+                  currentBeatData: '',
+                  beats:[],
+                  sequenceName: 'None',
+                  maxBeatsAllowed: 16,
+                  maxBeatsPerMeasure: 16,
+                  beatsPerMeasure: 8,
+                  notes: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
+                  durations: ['1m', '2n', '4n', '8n', '16n'],
+                  octaves: [0,1,2,3,4,5,6,7,8],
+                  dynamics: ['pp','p', 'mp', 'mf', 'f', 'ff'],
+                }
+              }
+              seq.push(new_sequence);
             }
-          }
-          // console.log(seq)
-        },
+          },
         toggleNote(beat, note) {
-          // console.log('toggle' + beat + note)
           //get note data,
           //toggle active state for cell
           //update note data for cell
           let vm = this;
-          let seq = vm.sequence;
+          let seq = vm.sequence.beats;
           if (seq[beat -1].on && seq[beat -1].note === note) {
             seq[beat -1].on = !seq[beat-1].on;
           }
@@ -368,7 +238,7 @@ window.onload = function () {
         },
         mutequery(note, beat) {
           let vm = this;
-          let seq = vm.sequence;
+          let seq = vm.sequence.beats;
           if (seq[beat - 1]) {
             if (seq[beat - 1].on && note === seq[beat - 1].note){
             return true}
@@ -383,11 +253,33 @@ window.onload = function () {
         playNote(note_obj) {
           duration = note_obj.duration;
           let note_name = note_obj.note + note_obj.octave;
-          synth.volume.value = note_obj.velocity;
+          synth.volume.value = sequence.dynamics[note_obj.velocity];
           synth.filterEnvelope.exponent = note_obj.envelopeAmount;
           synth.triggerAttackRelease(note_name, duration)
         },
-        createBlankSequence() {
+        initSequences() {
+          let seqs= this.arrangment.sequences;
+          while (seqs.length > this.arrangment.numberOfMeasures){
+            console.log(seqs)
+            seqs.pop();
+          };
+          //get notes for the length of the sequence or create a new note
+          for (let i=0; i < this.arrangment.numberOfMeasures; i++) {
+            //does note exist?
+            if (!seqs[i]) {
+              let newsequence= {
+                beat: i + 1,
+                on: false,
+                note: 'C',
+                duration: '8n',
+                octave: 3,
+                velocity: 0,
+                envelopeAmount: 0,
+                noiseGain: 0.5,
+              };
+              seqs.push(newsequence);
+            };
+          };
         },
         cloneSequence(sequence) {
           let vm = this;
@@ -415,22 +307,25 @@ window.onload = function () {
           p_p_delay.wet = vm.synthSettings.Delay.pPDelWet.value;
 
           // distortion.distortion = vm.synthSettings.Filter.Distortion.value;
-
-
         }
       },
-      // methods: {
-          // synthSettings:
-            // function (newvalue, Oldvalue) {
-              // alert()
-            // console.log(this.synthSettings.amplifier.Attack.value)
-
-          // },
-        // }
-      // },
+      computed:{
+        measuresPerSong: function () {
+            return this.arrangement.measures.length
+          },
+      },
       mounted: function () {
         let vm = this;
         vm.createNotes();
+        vm.initSequences();
       }
     })
+}
+
+function createNumRange(min, max, step) {
+  let range_array=[];
+  for(let i = 0; i < max; i += step) {
+    range_array.push(i);
+  return range_array
+  }
 }

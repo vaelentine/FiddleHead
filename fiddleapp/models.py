@@ -59,7 +59,7 @@ class SynthPreset(models.Model):
 class Song(models.Model):
     name = models.CharField(max_length=50, default="untitled")
     bpm = models.PositiveSmallIntegerField(default=120)
-    preset = models.ManyToManyField(SynthPreset, related_name='song', null=True, blank=True)
+    preset = models.ManyToManyField(SynthPreset, related_name='song')
 
     def __str__(self):
         return self.name

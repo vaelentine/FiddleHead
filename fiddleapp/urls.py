@@ -7,5 +7,6 @@ from django.conf.urls.static import static
 app_name = 'fiddleapp'
 
 urlpatterns = [
-    path('', views.index, name='index')
+    path('', views.index, name='index'),
+    path('api/', views.api, name='api')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
