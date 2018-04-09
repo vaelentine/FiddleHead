@@ -34,6 +34,7 @@ window.onload = function () {
 
               <div class="view_select" v-for="v in views.sequence" @click="view=v">{{ view }}</div>
 
+<<<<<<< HEAD
             <div class="matrix_div">
               <div v-if="view==='notes'"
               v-for="beat of fiddlehead.currentMeasureLength" class="beat_container" :beat="beat">
@@ -43,6 +44,27 @@ window.onload = function () {
               <div v-if="view==='durations'" v-for="beat of fiddlehead.currentMeasureLength" class="beat_container" :beat="beat">
                 <div class="cell" v-for="duration in fh_constants.beat.durations" :class="{on:currSeqBeatData[beat].duration===duration}" :duration_name="duration" :beat_number="beat" @click="currSeqBeatData[beat].duration=duration">{{ duration }}</div>
 
+=======
+        <div class="transport_module_div">
+          <div class="digital_display_div inset">
+            <div class="song_header">
+              <div class="inline" id="song_name"> {{ songName }}</div>
+              <div> </div>
+              <div class="inline" id="song_pos">{{ measureNumber }}:{{ currentBeat }}</div>
+              <div class="inline"> / </div>
+              <div class="inline" id="song_end"> {{measuresPerSong}} </div>
+              <div> </div>
+              <div class="inline" id="seq_name">sequence name</div>
+              <div class="inline" id="seq_number"> sequence number </div>
+              <div class="inline"> / </div>
+              <div class="inline" id="seq_total"> last sequence </div>
+            </div>
+            <div class="arrangement_cont">
+              <div class="timeline">
+                <div class="progress">
+                  <div class="seq_disp"></div>
+                </div>
+>>>>>>> 1eb9c542114d6f5b90f0090b2fdbf69280d6d318
               </div>
               <div v-if="view==='dynamics'" v-for="beat of fiddlehead.currentMeasureLength" class="beat_container" :beat="beat">
                 <div class="cell" v-for="dynamic in fh_constants.beat.dynamics" :class="{on:currSeqBeatData[beat].velocity===dynamic}" :dynamic_name="dynamic" :beat_number="beat + 1" @click="currSeqBeatData[beat].velocity=dynamic">{{ dynamic }}</div>
@@ -102,6 +124,7 @@ window.onload = function () {
         </div>
       </div>`,
       data: {
+<<<<<<< HEAD
         fiddlehead: fiddlehead
         song_name: 'untitled', //user set
         message:'message', //status messages
@@ -114,6 +137,156 @@ window.onload = function () {
           synth: ['amplifier', 'filter', 'lfo', 'delay', 'reverb'],
           user:['login','presets', 'songs']}
         },
+=======
+        matrix: '',
+        matrices: ['notes', 'octave', 'velocity', 'env amount', 'synthesizer'],
+        bpmMax: 999,
+        bpmMin: 60,
+        maxBeatsAllowed: 16,
+        songName: 'untitled',
+        measuresPerSong: 1,
+        beatsPerMeasure: 8,
+        measureNumber: 1,
+        bpm: 120,
+        playing: false,
+        currentBeat: 1,
+        subdivision: 1,
+        maxBeatsPerMeasure: 16,
+        bpm: 150,
+        arrangement:[],
+        sequence:[],
+        playing: false,
+        sequenceName: 'sequence',
+        rootNoteIndex: 3,
+        scaleTypes: ['Chromatic', 'Major', 'Minor'],
+        notes: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
+        oscTypes: ['sine', 'triangle', 'square', 'sawtooth', 'pwm'],
+        octaves: [0,1,2,3,4,5,6,7,8],
+        velocities: [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+        scaleTypeIndex: 0,
+        instrument: synth,
+        currentBeatData: '',
+        synthSettings: {
+          Oscillatorß: {
+            waveform: {
+              types: ['sine', 'triangle', 'square', 'sawtooth', 'pwm'],
+              min: 0,
+              max: 4,
+              step: 1,
+              value: 0,
+            },
+          },
+          amplifier: {
+            Attack: {
+              min: 0.01,
+              max: 10,
+              step: 0.5,
+              value: 0.5,
+            },
+            Decay: {
+              min: 0.01,
+              max: 1,
+              step: 0.1,
+              value: 0.5,
+            },
+            Sustain: {
+              min: 0.01,
+              max: 1,
+              step: 0.01,
+              value: 0.5,
+            },
+            Release: {
+              min: 0.01,
+              max: 10,
+              step: 0.5,
+              value: 0.5,
+            },
+          },
+          Filter: {
+            Attack: {
+              min: 0.01,
+              max: 10,
+              step: 0.5,
+              value: 0.5,
+            },
+            Decay: {
+              min: 0.01,
+              max: 10,
+              step: 0.5,
+              value: 0.5,
+            },
+            Sustain: {
+              min: 0.01,
+              max: 1,
+              step: 0.01,
+              value: 0.5,
+            },
+            Release: {
+              min: 0.01,
+              max: 10,
+              step: 0.5,
+              value: 0.5,
+            },
+            // Distortion: {
+            //   min: 0,
+            //   max: 1,
+            //   step: 0.1,
+            //   value: 0,
+            // },
+            Frequency: {
+              min: 60,
+              max: 18000,
+              step: 1,
+              value: 1000,
+            },
+            Quality: {
+              min: 0,
+              max: 1,
+              step: 0.1,
+              value: 0,
+            }
+          },
+          Delay: {
+            pPDelTime: {
+              min: 0.5,
+              max: 10,
+              step: 0.5,
+              value: 1,
+              exportTo: p_p_delay.delayTime.value
+            },
+            pPDelFdbk: {
+              min: 0.5,
+              max: 10,
+              step: 0.5,
+              value: 1,
+              exportTo: p_p_delay.feedback.value
+            },
+            pPDelWet: {
+              min: 0,
+              max: 1,
+              step: 0.1,
+              value: 1,
+              exportTo: p_p_delay.wet.value
+            },
+          },
+          reverb: {
+            verbSize: {
+              min: 0,
+              max: 1,
+              step: 0.1,
+              value: 0,
+              exportTo: reverb.roomSize.value
+            },
+            verbWet: {
+              min: 0,
+              max: 1,
+              step: 0.1,
+              value: 0,
+              exportTo: reverb.wet.value
+            },
+          },
+        }
+>>>>>>> 1eb9c542114d6f5b90f0090b2fdbf69280d6d318
       },
       methods: {
         createNotes() {
