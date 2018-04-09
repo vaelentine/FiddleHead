@@ -8,45 +8,33 @@ class SynthPreset(models.Model):
     name = models.CharField(max_length=35, default="Unnamed Preset")
 
     # oscillator properties
-    osc_waveform = models.CharField(max_length=35)
+    oscillator_type = models.CharField(max_length=35)
 
     # amplifier section
-    amp_gain = models.FloatField()
     amp_attack = models.FloatField()
     amp_decay = models.FloatField()
     amp_sutain = models.FloatField()
     amp_release = models.FloatField()
 
-    # distortion applied after amp envelope (filter gain)
-    distortion_amount = models.FloatField()
-    distortion_wet = models.FloatField()
+    distortion = models.FloatField()
 
-    # filter sections
     filter_type = models.CharField(max_length=35, default="lowpass")
-    filter_frequency = models.FloatField()
-    filter_resonance = models.FloatField()
-    filter_attack = models.FloatField()
-    filter_decay = models.FloatField()
-    filter_sustain = models.FloatField()
-    filter_release = models.FloatField()
+    filter_rolloff = models.SmallIntegerField()
+    filter_q = models.FloatField()
 
-    # lfo section
-    lfo_waveform = models.CharField(max_length=50, default="sine")
-    lfo_frequency = models.FloatField()
-    lfo_depth = models.FloatField()
-    lfo_sync_st = models.BooleanField()
-    lfo_destination = models.CharField(max_length=100, null=True, blank=True)
+    filter_env_attack = models.FloatField()
+    filter_env_decay = models.FloatField()
+    filter_env_sustain = models.FloatField()
+    filter_env_release = models.FloatField()
+    filter_env_base_frequency = models.PositiveSmallIntegerField()
+    filter_env_octaves = models.PositiveSmallIntegerField()
+    filter_env_attack_curve = models.CharField(max_length=30)
+    filter_env_release_curve = models.CharField(max_length=30)
+    filter_env_exponent = models.FloatField()
 
-
-    chorus_depth = models.FloatField()
-    chorus_frequency = models.FloatField()
-    chorus_delay = models.FloatField()
-    chorus_feedback = models.FloatField()
-    chorus_wet = models.FloatField()
-
-    fbdk_delay_time = models.FloatField()
-    fdbk_delay_fdbk = models.FloatField()
-    fdbk_delay_wet = models.FloatField()
+    delay_time = models.FloatField()
+    delay_feedback = models.FloatField()
+    delay_wet = models.FloatField()
 
     reverb_dampening = models.FloatField()
     reverb_size = models.FloatField()
@@ -55,10 +43,8 @@ class SynthPreset(models.Model):
     def __str__(self):
         return self.name
 
-
 class Song(models.Model):
     title = models.CharField(max_length=50, default="untitled")
-    sequences=
     bpm = models.PositiveSmallIntegerField(default=120)
     preset = models.ManyToManyField(SynthPreset, related_name='song')
 

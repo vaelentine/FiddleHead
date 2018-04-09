@@ -37,20 +37,20 @@ const fh_constants = {
     notes: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
   },
   sequence: {max_beats: 16},
-  arrangement: {max_measures: 16}
-  bpm: {min:60, max:999}
+  arrangement: {max_measures: 16},
+  bpm: {min:60, max:999},
   oscillator: {
     types: ['sine', 'triangle', 'square', 'square8', 'sawtooth', 'pwm', 'fatsquare', 'fatsawtooth'],
     spread: {min: 0, max: 100},
     count: {min: 1, max: 8}
   },
   distortion: {
-    distortion: {min: 0, max: 1}
-  }
+    distortion: {min: 0, max: 1},
+  },
   envelope: {
     attack: {min: 0.1, max: 1},
     decay: {min: 0.01, max: 1},
-    sustain: {min: 0, max: 1}
+    sustain: {min: 0, max: 1},
     release: {min: 0.02, max: 10}
   },
   filter: {
@@ -59,12 +59,12 @@ const fh_constants = {
     Q: {min:0, max:6},
   },
   filter_envelope: {
-    exponent: {min: 0, max: 10}
+    exponent: {min: 0, max: 10},
     baseFrequency: {min:80, max: 20000}
   },
   reverb: {
     roomSize: {min: 0.1, max: 1},
-    dampening: {min: 1000, max: 10000}
+    dampening: {min: 1000, max: 10000},
     wet: {min: 0, max: 1}
   },
   lfo: {
@@ -76,17 +76,17 @@ const fh_constants = {
     wet: {min: 0, max: 1}
   },
   reverb: {
-    size: {min: 0.01, max: 10}
+    size: {min: 0.01, max: 10},
     wet: {min:0, max:1}
 
   }
 }
 
 function linearRange(min, max, divisions) {
-  //base is number of segments
+  //divisions is number of segments
   let range_segments = [];
-  let segment_size = (max - min)/base
-  for(let i = 0, i < base -1; i++) {
+  let segment_size = (max - min)/divisions
+  for(let i = 0; i< divisions; i++) {
     let segment_val = i * segment_size;
     range_segments.push(segment_val);
   };
@@ -145,12 +145,12 @@ class Instrument {
     this.volume = new Tone.Volume({
       volume: 0
     });
-    patchNodes()
+    this.patchNodes()
   }
   patchNodes() {
     //attach envelope to
     this.filter_envelope.connect(this.filter.frequency)
-    this.oscillator.chain(this.oscillator, this.amplifier, this.distortion, this.filter, this.delay, this.reverb, this.volume, Tone.Master)
+    this.oscillator.chain(this.amplifier, this.distortion, this.filter, this.delay, this.reverb, this.volume, Tone.Master)
   }
   LFODestination(dest) {
     this.lfo.disconnect(this.lfo_dest)
@@ -181,6 +181,7 @@ class Instrument {
   serialize() {
     //return an object preset for saving to the server
     return {
+      preset_name : this.preset_name,
       oscillator: {
         type: this.oscillator.type,
       },
@@ -190,6 +191,7 @@ class Instrument {
         sustain: this.amplifier.sustain,
         release: this.amplifier.release
       },
+      distortion: this.distortion.distortion,
       filter: {
         type: this.filter.type,
         rolloff: this.filter.rolloff,
@@ -210,15 +212,22 @@ class Instrument {
         delayTime: this.delay.delayTime,
         feedback: this.delay.feedback,
         wet: this.delay.wet,
+      },
+      reverb: {
+        roomSize: this.reverb.roomSize,
+        dampening: this.reverb.dampening,
+        wet: this.reverb.wet,
       }
     }
   }
   deSerialize(object) {
+    this.preset_name = object.preset_name;
     this.oscillator.type = object.oscillator.type;
     this.amplifier.attack = object.amplifier.attack;
     this.amplifier.decay = object.amplifier.decay;
     this.amplifier.sustain = object.amplifier.sustain;
     this.amplifier.release = object.amplifier.release;
+    this.distortion.distortion = object.distortion;
     this.filter.type = object.filter.type;
     this.filter.rolloff = object.filter.rolloff;
     this.filter.Q = object.filter.Q;
@@ -235,6 +244,9 @@ class Instrument {
     this.delay.delayTime = object.delay.delayTime;
     this.delay.feedback = object.delay.feedback;
     this.delay.wet = object.delay.wet;
+    this.reverb.roomSize = object.reverb.roomSize;
+    this.reverb.dampening = object.reverb.dampening;
+    this.reverb.wet = object.reverb.wet;
   }
 }
 
@@ -265,7 +277,7 @@ class SongManager {
     this.sequences[sequence_index].push(new Beat())
   }
   removeLastBeat(sequence_index) {
-    this.sequences[sequence_index].pop)();
+    this.sequences[sequence_index].pop();
   }
   updateBeat(seq_index, beat_index, parameter, value) {
     this.sequences[seq_index][beat_index][parameter] = value;
@@ -283,31 +295,31 @@ class SongManager {
       console.log(error);
     });
   }
-  get currentSequenceIndex() {
+  getCurrentSequenceIndex() {
     return this.arrangement[this.measure];
   }
-  get currentMeasureLength() {
-    return this.sequences[this.currentSequenceIndex].length;
+  getCurrentMeasureLength() {
+    return this.sequences[this.getCurrentSequenceIndex()].length;
   }
-  get currentSequenceData() {
-    return this.sequences[this.currentSequenceIndex];
+  getCurrentSequenceData() {
+    return this.sequences[this.getCurrentSequenceIndex()];
   }
   get currentBeatData() {
-    return this.currentSequenceData[this.beat];
+    return this.getCurrentSequenceData()[this.beat];
   }
   get totalMeasures() {
-    return this.sequences.length();
+    return this.sequences.length;
   }
   get currentPreset() {
-    return currentSequenceData.synth_preset;
+    return this.getCurrentSequenceData.synth_preset;
   }
   set currentMeasureLength(beats) {
-    let meas = this.sequences[this.currentSequenceIndex]
-    while (beats > this.currentMeasureLength) {
+    let meas = this.sequences[this.getCurrentSequenceIndex]
+    while (beats > this.getCurrentMeasureLength()) {
       // remove extra beats
       meas.pop()
     }
-    while (beats < this.currentMeasureLength) {
+    while (beats < this.getCurrentMeasureLength()) {
       this.addBeat(meas);
     }
   }
@@ -325,11 +337,9 @@ class SongManager {
       let timer = setTimeout( function () {
 
         this.updateSongClock(); //callback
-
-<<<<<<< HEAD
         //set clock to next increment
         this.beat += 1;
-        if (this.beat > this.currentMeasureLength) {
+        if (this.beat > this.getCurrentMeasureLength()) {
           this.beat = 0; //reset at bar end
           this.measure += 1 //increment measure
         }
@@ -351,8 +361,8 @@ class SongManager {
         this.updateTimeClock(); //callback
         //set clock to next increment
         this.seconds += 1;
-      }
-    }, 1000);
+      }, 1000);
+    }
   }
   playPause() {
     this.playing = !this.playing;
@@ -412,8 +422,13 @@ class SongManager {
     }).catch(error => {
       console.log(error);
     });
+  }
+  serializeSong() {
+    return {
+      title: this.title,
+    }
+  }
   loadCurrentPreset() {
-
   }
   //methods:
   //save song
@@ -423,11 +438,10 @@ class SongManager {
   //push data to server
   //save song
   //load song
-    }
-  }
 }
 
-let fiddlehead = new SongManager()
+
+const fiddlehead = new SongManager()
 
 // axios({
 //   method: 'GET',
@@ -437,20 +451,3 @@ let fiddlehead = new SongManager()
 // }).catch(error => {
 //   console.log(error);
 // });
-=======
-});
-console.log(synth)
-// let distortion = new Tone.Distortion();
-// let chorus = new Tone.Chorus();
-// let lfo = Tone.lfo();
-// let noise_synth = new Tone.NoiseSynth()
-const volume = new Tone.Volume();
-const reverb = new Tone.Freeverb();
-const p_p_delay = new Tone.PingPongDelay();
-const filter = new Tone.Filter();
-
-//patch nodes to master output
-synth.connect(chorus).connect(p_p_delay).connect(reverb).connect(volume)toMaster();
-ß
-const oscTypes= ['sine', 'triangle', 'square', 'sawtooth', 'pwm'];
->>>>>>> 1eb9c542114d6f5b90f0090b2fdbf69280d6d318
