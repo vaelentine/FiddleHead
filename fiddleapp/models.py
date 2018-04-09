@@ -57,7 +57,8 @@ class SynthPreset(models.Model):
 
 
 class Song(models.Model):
-    name = models.CharField(max_length=50, default="untitled")
+    title = models.CharField(max_length=50, default="untitled")
+    sequences=
     bpm = models.PositiveSmallIntegerField(default=120)
     preset = models.ManyToManyField(SynthPreset, related_name='song')
 
@@ -69,7 +70,6 @@ class Sequence(models.Model):
     name = models.CharField(max_length=35, default="untitled")
     length = models.PositiveSmallIntegerField(default=8)
     scale_type = models.CharField(max_length=50, default="Chromatic")
-    root_note = models.CharField(max_length=2, default='C')
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
     preset = models.ForeignKey(SynthPreset, null=True, blank=True, on_delete=models.SET_NULL)
 

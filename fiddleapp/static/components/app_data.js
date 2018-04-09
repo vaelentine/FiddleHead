@@ -220,4 +220,5 @@ class Instrument {
     this.delay.feedback = object.delay.feedback;
     this.delay.wet = object.delay.wet;
   }
+
 }
