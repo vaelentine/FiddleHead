@@ -7,12 +7,12 @@ window.onload = function () {
         <view_screen
           :message="message"
           :song_name="song_name"
-          :number_of_beats="transport.beatsPerMeasure"
+          :number_of_beats="arrangement.beatsPerMeasure"
           :current_beat="current_beat"
           :current_measure="measureNumber"
           :preset_name="preset_name"
-          :total_measures="numberOfMeasures"
-          :beats_per_minute='transport.bpm'
+          :total_measures="arrangement.numberOfMeasures"
+          :beats_per_minute='bpm'
           :play_time="undefined"
           :mode_selected="mode"
           :view_selected="currentView"
@@ -58,14 +58,14 @@ window.onload = function () {
               <div class="arrangement_length_div">
                 <label> arrangement length: </label>
                 <div v-for="n of arrangement.maxMeasuresAllowed"
-                :measure_num="n+1" :class="{on:arrangement.numberOfMeasures===n}" class="cell" @click="arrangment.numberOfMeasures=n">
+                :measure_num="n+1" :class="{on:arrangement.numberOfMeasures===n}" class="cell" @click="arrangement.numberOfMeasures=n">
                 </div>
               </div>
 
 
               <div class="matrix_div">
                 <div v-for="measure of arrangement.measuresPerSong" class="measure_container" :measure="measure + 1">
-                  <div class="cell" v-for="sequence in arrangment.sequences" :class="{on:arrangment.measure==arrangment.sequence}" :sequence_name="sequence.sequenceName" :sequence_number="sequence + 1" @click="arrangement.sequence[sequence]">{{ sequence.sequenceName }}</div>
+                  <div class="cell" v-for="sequence in arrangement.sequences" :class="{on:arrangement.measure==arrangement.sequence}" :sequence_name="sequence.sequenceName" :sequence_number="sequence + 1" @click="arrangement.sequence[sequence]">{{ sequence.sequenceName }}</div>
                 </div>
               </div>
               </div>
@@ -80,23 +80,37 @@ window.onload = function () {
             </div>
             </div>
           </div>
+          <div class="bt_cont">
+            <div class="slot">
+              <div class="tr_bt inline" id="prev_bt" v-on:click=seekPrev() > ◅◅ </div>
+              <div class="tr_bt inline" id="play_bt" v-on:click=play()> ► </div>
+              <div class="tr_bt inline" id="pause_bt" v-on:click=pause() > ❙❙ </div>
+              <div class="tr_bt inline" id="stop_bt" v-on:click=stop() > ■ </div>
+              <div class="tr_bt inline" id="next_bt" v-on:click=seekNext() > ▻▻ </div>
+              <div class="tr_bt inline" id="next_bt" v-on:click=seekNext() > + </div>
+              <div class="tr_bt inline" id="next_bt" v-on:click=seekNext() > del </div>
+              <div class="tr_bt inline" id="save_bt" v-on:click=seekNext() > 💾  </div>
+              <div class="tr_bt inline" id="_bt" v-on:click=seekNext() > 📁 </div>
+
+            </div>
         </div>
       </div>`,
       data: {
-        song_name: 'untitled',
-        message:'message',
-        mode: 'Sequence',
+        song_name: 'untitled', //user set
+        message:'message', //status messages
+        mode: 'Sequence', //user determined
         currentView: 'notes',
         modes: ['Sequence', 'Arrangement', 'Synthesizer', 'User'],
-        transport: { bpmMax: 999, bpmMin: 60, bpm: 120 },
-        song_state: 'stopped',
+        bpmMax: 999,
+        bpmMin: 60,
+        bpm: 120,
         playing: false,
         measureNumber: 1,
         current_beat: 1,
         preset_name: 'none',
         arrangement: {
           viewName: 'Arrangement',
-          numberOfMeasures: 1,
+          numberOfMeasures: 2,
           maxMeasuresAllowed: 16,
           views:['Arrangement'],
 
@@ -155,71 +169,64 @@ window.onload = function () {
       methods: {
         update_clock() {
           let vm = this;
-          if (playing) {
+          if (vm.playing) {
             let timer = setTimeout( function () {
               vm.update_clock();
               vm.current_beat += 1;
               if (vm.current_beat > vm.sequence.beatsPerMeasure) {
                 vm.measureNumber + 1;
                 vm.current_beat = 1;
-                vm.measureNumber = vm.measureNumber % vm.measuresPerSong;
+                vm.measureNumber = vm.measureNumber % vm.arrangement.measuresPerSong;
               }
-              vm.currentBeatData = vm.sequence[vm.current_beat - 1]
+              vm.currentBeatData = vm.sequence.beats[vm.current_beat - 1]
               if (vm.currentBeatData.on) {
                 vm.playNote(vm.currentBeatData)
               }
-
             }, 60000/vm.bpm)
           }
         },
         play() {
           let vm = this;
           vm.current_beat = 1;
-          playing = !playing;
+          vm.playing = !vm.playing;
           vm.update_clock()
         },
         pause() {
-          playing = false;
+          this.playing = false;
         },
         stop() {
-          playing = false;
+          this.playing = false;
           current_beat = 1;
         },
         seekPrev() {
-          measureNumber -= measureNumber - 1 % vm.arrangment.measuresPerSong;
+          this.measureNumber -= this.measureNumber - 1 % vm.arrangement.measuresPerSong;
         },
         seekNext() {
-          measureNumber = measureNumber + 1 % vm.arrangment.measuresPerSong;
+          this.measureNumber = this.measureNumber + 1 % vm.arrangement.measuresPerSong;
         },
         createNotes() {
           let vm = this;
           let seq = vm.sequence.beats;
           //popoff extra notes
-          while (seq.length > vm.arrangment.numberOfMeasures - 1) {
-            // console.log(seq)
+          while (seq.length > this.sequence.beatsPerMeasure - 1) {
             seq.pop();
           };
           //get notes for the length of the sequence or create a new note
-          for (let i=0; i < vm.arrangment.numberOfMeasures; i++) {
+          for (let i=0; i < this.sequence.beatsPerMeasure; i++) {
             //does note exist?
             if (!seq[i]) {
-              let new_sequence= {
-                  viewName: '',
-                  sequenceNumber: i,
-                  views: ['notes', 'durations', 'dynamics', 'octaves'],
-                  currentBeatData: '',
-                  beats:[],
-                  sequenceName: 'None',
-                  maxBeatsAllowed: 16,
-                  maxBeatsPerMeasure: 16,
-                  beatsPerMeasure: 8,
-                  notes: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
-                  durations: ['1m', '2n', '4n', '8n', '16n'],
-                  octaves: [0,1,2,3,4,5,6,7,8],
-                  dynamics: ['pp','p', 'mp', 'mf', 'f', 'ff'],
-                }
+              let silentnote = {
+              beat: i + 1,
+              on: false,
+              note: 'C',
+              duration: '8n',
+              octave: 3,
+              velocity: 0,
+              envelopeAmount: 0,
+              noiseGain: 0.5,
+              };
+                seq.push(silentnote);
               }
-              seq.push(new_sequence);
             }
           },
         toggleNote(beat, note) {
@@ -253,30 +260,36 @@ window.onload = function () {
         playNote(note_obj) {
           duration = note_obj.duration;
           let note_name = note_obj.note + note_obj.octave;
-          synth.volume.value = sequence.dynamics[note_obj.velocity];
+          console.log(note_obj)
+          synth.volume.value =  0;
           synth.filterEnvelope.exponent = note_obj.envelopeAmount;
           synth.triggerAttackRelease(note_name, duration)
         },
         initSequences() {
-          let seqs= this.arrangment.sequences;
-          while (seqs.length > this.arrangment.numberOfMeasures){
-            console.log(seqs)
+          let seqs= this.arrangement.sequences;
+          while (seqs.length > this.arrangement.numberOfMeasures){
             seqs.pop();
           };
           //get notes for the length of the sequence or create a new note
-          for (let i=0; i < this.arrangment.numberOfMeasures; i++) {
+          for (let i=0; i < this.arrangement.numberOfMeasures; i++) {
             //does note exist?
             if (!seqs[i]) {
-              let newsequence= {
-                beat: i + 1,
-                on: false,
-                note: 'C',
-                duration: '8n',
-                octave: 3,
-                velocity: 0,
-                envelopeAmount: 0,
-                noiseGain: 0.5,
-              };
+              let newsequence=
+              {
+                  viewName: '',
+                  sequenceNumber: i,
+                  views: ['notes', 'durations', 'dynamics', 'octaves'],
+                  currentBeatData: '',
+                  beats:[],
+                  sequenceName: 'None',
+                  maxBeatsAllowed: 16,
+                  maxBeatsPerMeasure: 16,
+                  beatsPerMeasure: 8,
+                  notes: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
+                  durations: ['1m', '2n', '4n', '8n', '16n'],
+                  octaves: [0,1,2,3,4,5,6,7,8],
+                  dynamics: ['pp','p', 'mp', 'mf', 'f', 'ff'],
+                }
               seqs.push(newsequence);
             };
           };
@@ -310,17 +323,23 @@ window.onload = function () {
         }
       },
       computed:{
+        song_state: function(){
+          return this.playing? 'playing' : 'stopped'
+        },
         measuresPerSong: function () {
             return this.arrangement.measures.length
           },
       },
       mounted: function () {
-        let vm = this;
-        vm.createNotes();
-        vm.initSequences();
+        this.createNotes();
+        this.initSequences();
+        console.log(this.currentBeatData)
       }
     })
 }
+
+
+
 
 function createNumRange(min, max, step) {
   let range_array=[];
