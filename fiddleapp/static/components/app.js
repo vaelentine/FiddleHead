@@ -15,13 +15,15 @@ window.onload = function () {
           <div v-for="selection in modes" class="mode_bt" @click="mode=selection" :class="{active:mode===selection}">{{selection}}</div>
         </div>
 
-        <div class="options_div">
+        <div class="interactivity_div">
+
           <div class="mode_view">
             <div v-if="mode==='Sequence'">
               <div class="sequence_length_div">
                 <label> sequence length: </label>
-                <div v-for="n of fh_constants.sequence.max_beats" :beat_num="n" :class="{on:fiddlehead.getCurrentMeasureLength===n}" class="cell" @click="fiddlehead.getCurrentMeasureLength(n)">
-                </div>
+
+                <cell v-for="n of fh_constants.sequence.max_beats"
+                :beat_num="n"  :class="{on:currentMeasureLength===n}" @click="currentMeasureLength=n" </div>
               </div>
 
               <div class="view_select" v-for="v in views.sequence" @click="view=v">{{ view }}</div>
@@ -154,6 +156,23 @@ window.onload = function () {
         },
         play_pause_icon: function () {
           return this.playing? '❙❙':'■';
+        },
+        currentArrangmentLength: {
+          get: function () {
+            return this.fiddlehead.sequences.length
+          },
+          set: function (newValue) {
+            this.fiddlehead.setArrangementLength(newValue)
+          }
+        },
+        currentMeasureLength: {
+          get: function () {
+            return this.fiddlehead.getCurrentMeasureLength() - 1;
+          },
+          set: function (newValue) {
+            this.fiddlehead.currentMeasureLength(newValue);
+            console.log(fiddlehead.getCurrentMeasureLength())
+          }
         }
       }
     })

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://tonejs.github.io/build/Tone.min.js"></script>
+
+  </head>
+  <body>
+    <script>
+      let osc = new Tone.OmniOscillator();
+      let amp = new Tone.AmplitudeEnvelope();
+      osc.connect(amp)
+      amp.toMaster();
+      osc.start().stop('+2n');
+      amp.triggerAttackRelease('C4','2n');
+    </script>
+    <script src="main.js"></script>
+
+  </body>
+
+
+</html>

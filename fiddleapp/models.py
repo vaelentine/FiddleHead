@@ -19,17 +19,17 @@ class SynthPreset(models.Model):
     distortion = models.FloatField()
 
     filter_type = models.CharField(max_length=35, default="lowpass")
-    filter_rolloff = models.SmallIntegerField()
+    filter_rolloff = models.SmallIntegerField(default=-24)
     filter_q = models.FloatField()
 
     filter_env_attack = models.FloatField()
     filter_env_decay = models.FloatField()
     filter_env_sustain = models.FloatField()
     filter_env_release = models.FloatField()
-    filter_env_base_frequency = models.PositiveSmallIntegerField()
-    filter_env_octaves = models.PositiveSmallIntegerField()
-    filter_env_attack_curve = models.CharField(max_length=30)
-    filter_env_release_curve = models.CharField(max_length=30)
+    filter_env_base_frequency = models.PositiveSmallIntegerField(default=80)
+    filter_env_octaves = models.PositiveSmallIntegerField(default=8)
+    filter_env_attack_curve = models.CharField(max_length=30, default='exponential')
+    filter_env_release_curve = models.CharField(max_length=30, default='exponential')
     filter_env_exponent = models.FloatField()
 
     delay_time = models.FloatField()
