@@ -1,7 +1,17 @@
 :root {
-  --led-size: 15px;
+  --led-size: 14px;
   --t-width: calc(0.8 * var(--led-size));
   --t-height: calc(0.6 * var(--led-size))
+}
+
+.leds_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 5px;
+}
+.each_led_container {
+  width: 33px;
 }
 
 .led {
@@ -17,7 +27,7 @@
 .led:after {
   display: inline-block;
   content: '';
-  margin: 10%;
+  margin: 5%;
   width: var(--t-width);
   height: var(--t-height);
   border-radius: 50%;
@@ -25,6 +35,6 @@
 }
 
 
-.on {
+.led.on {
   filter: brightness(100%);
 }

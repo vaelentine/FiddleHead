@@ -1,24 +1,46 @@
+.mode_box {
+  position:relative;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  /* border: 1px solid black; */
+  top: 10px;
+  width: 200px;
+
+}
+
 .positioner {
+  position: relative;
   display: flex;
   width: 100%;
+  /* top: 100px; */
   /* justify-content: center; */
-  height: 100px;
+  height: 100%;
 }
+
 .mode_selector {
-  margin: 50px;
+  /* margin: 50px; */
   display: flex;
-  /* Position: relative; */
-  /* top: 50px; */
+  position: absolute;
   height: 50px;
+  top: 40px;
   /* left: 84px; */
+  /* border: 1px solid black; */
+
   /* width: 110px; */
 }
+
 .mode_bt {
   transform: rotate(-45deg);
   width: 35px;
   height: 9px;
-  border: 2px solid #413d3b;
-  background: #531a0f;
+  border: 2px solid #010101;
+  background: #2f1c18;
   border-radius: 30px;
   line-height: 30px;
+}
+.mode_bt >label {
+  position: relative;
+  transform: rotate(45deg);
+  font-size: 10px;
 }

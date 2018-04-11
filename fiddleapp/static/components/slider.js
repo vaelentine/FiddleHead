@@ -5,8 +5,8 @@ Vue.component('slider', {
       <input class="slider"
         type="range"
         v-model.number="value"
-          :min="min" :max="max" :step="step" :value="value" "/>
-          <input class="num_display" v-model= type="text" :value="value"   />
+          :min="min" :max="max" :step="step" :value="value"/>
+          <input class="num_display" v-model.number="" type="text" :value="value"   />
       </div>`,
   data() {
     return {

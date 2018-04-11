@@ -1,0 +1,61 @@
+/* body {
+  font-family: Consolas, monaco, monospace;
+  font-size: 24px; font-style: normal; font-variant: normal;
+
+  background: linear-gradient(233deg, #7b65ad, #c0d4cf, #a5d4c3, #fadef9);
+  background-size: 100% 100%;
+
+  -webkit-animation: AnimationName 13s ease infinite;
+  -moz-animation: AnimationName 13s ease infinite;
+  animation: AnimationName 13s ease infinite;
+
+  @-webkit-keyframes AnimationName {
+    0%{background-position:0% 54%}
+    50%{background-position:100% 47%}
+    100%{background-position:0% 54%}
+  }
+  @-moz-keyframes AnimationName {
+    0%{background-position:0% 54%}
+    50%{background-position:100% 47%}
+    100%{background-position:0% 54%}
+  }
+  @keyframes AnimationName {
+    0%{background-position:0% 54%}
+    50%{background-position:100% 47%}
+    100%{background-position:0% 54%}
+  }
+} */
+div {
+  font-family: Consolas, monaco, monospace;
+
+}
+#app {
+  overflow: hidden;
+  display: flex;
+  font-family: Consolas, monaco, monospace;
+  font-size: 24px; font-style: normal; font-variant: normal;
+
+  background: linear-gradient(233deg, #7b65ad, #c0d4cf, #a5d4c3, #fadef9);
+  background-size: 100% 100%;
+
+  -webkit-animation: AnimationName 13s ease infinite;
+  -moz-animation: AnimationName 13s ease infinite;
+  animation: AnimationName 13s ease infinite;
+
+  @-webkit-keyframes AnimationName {
+    0%{background-position:0% 54%}
+    50%{background-position:100% 47%}
+    100%{background-position:0% 54%}
+  }
+  @-moz-keyframes AnimationName {
+    0%{background-position:0% 54%}
+    50%{background-position:100% 47%}
+    100%{background-position:0% 54%}
+  }
+  @keyframes AnimationName {
+    0%{background-position:0% 54%}
+    50%{background-position:100% 47%}
+    100%{background-position:0% 54%}
+  }
+
+}

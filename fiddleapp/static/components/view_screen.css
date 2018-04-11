@@ -1,8 +1,12 @@
-/* .view_screen_div {
+.view_screen_div {
+  /* border: 2px solid black; */
+  /* width:75%; */
+  /* height: 75%; */
   border: 2px solid black;
-  width: 550px;
-  height: 200px;
-  background-color: linear-gradient(rgb(10, 28, 40), rgb(17, 19, 41));
+  border-radius: 2%;
+  padding: 10px;
+  background-color: rgba(27, 32, 33, 0.9);
+  /* background-color: linear-gradient(rgb(10, 28, 40), rgb(17, 19, 41)); */
 }
 
 .inset {
@@ -15,7 +19,7 @@
   padding: 10px;
   text-shadow: 0px 1px 3px rgba(50,50,50,0.4);
 }
-.scanlines {
+/* .scanlines {
   position: absolute;
   opacity: 0.1;
   bottom: 0px;
@@ -26,7 +30,7 @@
   /* height: max-content; */
   background: black;
   background: repeating-linear-gradient(0deg, rgb(75, 88, 81), transparent 2px, rgb(75, 75, 70) 1px);
-}
+} */
 
 
   .bt_cont {
@@ -96,4 +100,4 @@
 
   /* .inline {
     display: inline-flex;
-  } */ */
+  } */

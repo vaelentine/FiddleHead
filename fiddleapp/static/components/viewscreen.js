@@ -18,9 +18,9 @@ Vue.component('view_screen', {
           <div id="seq_name">sequence: ({{ fiddlehead.measure }}/{{ fiddlehead.totalMeasures }})</div>
           <div>Preset: {{ fiddlehead.currentPreset }}</div>
           <div>Bpm: {{ fiddlehead.bpm }} </div>
-          <div> Mode: {{ mode_selected }}</div>
-          <div> View: {{ view_selected }} </div>
-          <div> Transport state: {{ transport_state }} </div>
+          <div> Mode: {{ mode }}</div>
+          <div> View: {{ view }} </div>
+          <div> Transport state: {{ song_state }} </div>
         </div>
       </div>
     </div>`,
