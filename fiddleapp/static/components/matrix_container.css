@@ -1,5 +1,6 @@
 .matrix_container {
-  left: 10px;
+  /* left: 10px; */
+  top: 330px;
   position: absolute;
   left: -1vw;
   display: flex;
@@ -17,6 +18,7 @@
   flex-direction: column-reverse;
 }
 .matrix_cell {
+  font-size: 10px;
   background: #5B6BF6;
   background: linear-gradient(#6d73a7, #948a8a);
   /* border-radius: 5px; */
@@ -31,7 +33,7 @@
   /* filter: brightness(0.5); */
   z-index: 20;
   text-align: center;
-  width: 4vw;
+  width: 3vw;
   height: 16px;
   box-shadow: 2px 2px  black, inset -1px -2px 2px 0.1px;
 }

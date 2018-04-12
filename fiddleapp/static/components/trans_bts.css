@@ -21,3 +21,45 @@
   border-width: 1.5em 0 1.5em 3em;
   border-color: transparent transparent transparent #000;
 }
+.bt_cont {
+}
+.slot {
+  position: relative;
+  left: 50px;
+  width: auto;
+  display: flex;
+  justify-content: center;
+  margin: 3px 0 0 0;
+}
+.tr_bt {
+  height: 20px;
+  justify-content: center;
+  width: 20px;
+  border: 2px solid black;
+  font-family: monospace;
+  text-shadow: 0px 1px 0px grey;
+  font-weight: bold;
+  background: rgba(60, 60, 200, 0.9);
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  /* border: 1px outset black; */
+  box-shadow: 2px 2px  black, inset -1px -2px 2px 0.1px;
+
+}
+
+.tr_bt:hover {
+  filter: brightness(1.2);
+}
+
+.tr_bt:active {
+  position: relative;
+  box-shadow: 0px 0px  black, inset -1px -2px 2px 0.1px;
+  top: 2px;
+  left: 2px;
+  /* border: 1px outset rgb(79, 79, 83); */
+}
+
+.arrangement_cont {
+  margin: 10px 0 0 0;
+}

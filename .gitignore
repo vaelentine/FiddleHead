@@ -2,6 +2,7 @@
 local_settings.py
 tutorial/
 drafts/
+db.sqlite3
 
 
 # Elastic Beanstalk Files

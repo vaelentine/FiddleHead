@@ -1,7 +1,11 @@
 .bt_cont {
   border: 1px solid black;
   position: relative;
-  left: 100px;
+  margin:auto;
+  left: 150px;
+}
+.slot {
+  left: 200px;
 }
 .fh_bt {
   user-select: none;

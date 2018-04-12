@@ -4,7 +4,7 @@
   flex-direction: column;
   text-align: left;
   /* border: 1px solid black; */
-  top: 10px;
+  /* top: -%; */
   width: 200px;
 
 }
@@ -15,7 +15,7 @@
   width: 100%;
   /* top: 100px; */
   /* justify-content: center; */
-  height: 100%;
+  /* height: 100%; */
 }
 
 .mode_selector {
@@ -23,7 +23,7 @@
   display: flex;
   position: absolute;
   height: 50px;
-  top: 40px;
+  top: -25px;
   /* left: 84px; */
   /* border: 1px solid black; */
 

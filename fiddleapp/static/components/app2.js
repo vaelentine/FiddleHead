@@ -9,13 +9,13 @@ window.onload = function () {
           <div class="digital_display_div inset">
             <div class="leds_container">
               <div v-for="beat of currentMeasureLength" :beat_number="beat" class="each_led_container">
-                <led :beat_number="beat + 1" :active="beat-1==fiddlehead.beat" />
+                <led :beat_number="beat" :active="beat==curr_beat" />
               </div>
             </div>
             <div class="Info">
               <div> Message: {{ message }} </div>
               <div id="song_name"> Song:{{ fiddlehead.title }}</div>
-              <div id="seq_name">position: ({{ fiddlehead.measure +1 }}:{{ fiddlehead.beat + 1}}/{{ currentArrangementLength }})</div>
+              <div id="seq_name">position: ({{ curr_meas }}:{{ curr_beat}}/{{ currentArrangementLength }})</div>
               <div>Preset: {{ fiddlehead.currentPreset }}</div>
               <div>Bpm: {{ fiddlehead.bpm }} </div>
               <div> Mode: {{ mode }}</div>
@@ -49,7 +49,7 @@ window.onload = function () {
 
 
           <div v-if="mode==='Sequence'">
-            <div class="sequence_length_div">
+            <div class="horz_cell_container">
               <label> sequence length: {{ currentMeasureLength }} </label>
               <div v-for="n of 16" class="cell" :beat_num="n" :class="{on:currentMeasureLength===n}" v-on:click="currentMeasureLength=n"> {{ n }}</div>
             </div>
@@ -57,12 +57,12 @@ window.onload = function () {
 
 
           <div v-if="mode==='Arrangement'">
-            <div class="sequence_length_div">
+            <div class="horz_cell_container">
               <label> arrangement length: {{ currentArrangementLength }} </label>
               <div v-for="n of 16" class="cell" :seq_num='n' :class="{on:currentArrangementLength===n}" v-on:click="currentArrangementLength=n"> {{ n }}</div>
             </div>
 
-            <div class="sequence_length_div">
+            <div class="horz_cell_container">
               <label> Save </label>
               <div class="cell" v-on:click="fiddlehead.saveSong"> Save this arrangement</div>
             </div>
@@ -70,15 +70,13 @@ window.onload = function () {
           </div>
 
           <div v-if="mode==='Synthesizer'">
-            <div class="sequence_length_div">
+            <div class="horz_cell_container">
               <label> synth volume: {{ volume }} </label>
-              <div v-for="n of 10" class="cell" :num="n" :class="{on:volume===n}" v-on:click="volume=n"> {{ n }}</div>
+              <div v-for="n of 20" class="cell" :num="n" :class="{on:volume===n}" v-on:click="volume=n"> {{ n }}</div>
             </div>
 
-          <div class="sequence_length_div">
-            <label> oscillator: {{ fiddlehead.synth.oscillator.type }} </label>
-            <div v-for="n of fh_constants.oscillator.types" class="cell" :num="n" :class="{on:oscillator_type==n}" v-on:click="oscillator_type=n"> {{ n }}</div>
-          </div>
+
+
         </div>
 
 
@@ -148,15 +146,73 @@ window.onload = function () {
             </div>
           </div>
 
+
+          <div v-if="view==='amplifier'">
+            <div class="synth_setting_container">
+              <label> oscillator: {{ fiddlehead.synth.oscillator.type }} </label>
+              <div v-for="n of fh_constants.oscillator.types" class="cell" :num="n" :class="{on:oscillator_type==n}" v-on:click="oscillator_type=n"> {{ n }}</div>
+            </div>
+
+            <div class="synth_setting_container">
+            <label>Amplifier</label>
+            </div>
+
+            <div class="synth_setting_container">
+              <label> attack: {{ fiddlehead.synth.amplifier.attack }} </label>
+              <div v-for="n of env_time_array" class="cell" :num="n" :class="{on:fiddlehead.synth.amplifier.attack==n}" v-on:click="fiddlehead.synth.amplifier.attack=n"> {{ n }}</div>
+            </div>
+            <div class="synth_setting_container">
+              <label> decay: {{ fiddlehead.synth.amplifier.decay }} </label>
+              <div v-for="n of env_time_array" class="cell" :num="n" :class="{on:fiddlehead.synth.amplifier.decay==n}" v-on:click="fiddlehead.synth.amplifier.decay=n"> {{ n }}</div>
+            </div>
+            <div class="synth_setting_container">
+              <label> sustain: {{ fiddlehead.synth.amplifier.sustain }} </label>
+              <div v-for="n of env_time_array" class="cell" :num="n" :class="{on:fiddlehead.synth.amplifier.sustain==n}" v-on:click="fiddlehead.synth.amplifier.sustain=n"> {{ n }}</div>
+            </div>
+            <div class="synth_setting_container">
+              <label> release: {{ fiddlehead.synth.amplifier.release }} </label>
+              <div v-for="n of env_time_array" class="cell" :num="n" :class="{on:fiddlehead.synth.amplifier.release==n}" v-on:click="fiddlehead.synth.amplifier.release=n"> {{ n }}</div>
+            </div>
+          </div>
+            <div v-if="view==='filter'">
+              <div class="synth_setting_container">
+              <label>Filter</label>
+              </div>
+
+              <div class=frq_sl>
+              <label>Filter Frequency</label>
+                <input type=range min="60" max="18000" v-model.number="synth.filter_envelope.baseFrequency" step="1" />
+                <label>{{ synth.filter_envelope.baseFrequency }}</label>
+              </div>
+
+              <div class="synth_setting_container">
+                <label> attack: {{ fiddlehead.synth.filter_envelope.attack }} </label>
+                <div v-for="n of env_time_array" class="cell" :num="n" :class="{on:fiddlehead.synth.filter_envelope.attack==n}" v-on:click="fiddlehead.synth.filter_envelope.attack=n"> {{ n }}</div>
+              </div>
+              <div class="synth_setting_container">
+                <label> decay: {{ fiddlehead.synth.filter_envelope.decay }} </label>
+                <div v-for="n of env_time_array" class="cell" :num="n" :class="{on:fiddlehead.synth.filter_envelope.decay==n}" v-on:click="fiddlehead.synth.filter_envelope.decay=n"> {{ n }}</div>
+              </div>
+              <div class="synth_setting_container">
+                <label> sustain: {{ fiddlehead.synth.filter_envelope.sustain }} </label>
+                <div v-for="n of env_time_array" class="cell" :num="n" :class="{on:fiddlehead.synth.filter_envelope.sustain==n}" v-on:click="fiddlehead.synth.filter_envelope.sustain=n"> {{ n }}</div>
+              </div>
+              <div class="synth_setting_container">
+                <label> release: {{ fiddlehead.synth.filter_envelope.release }} </label>
+                <div v-for="n of env_time_array" class="cell" :num="n" :class="{on:fiddlehead.synth.filter_envelope.release==n}" v-on:click="fiddlehead.synth.filter_envelope.release=n"> {{ n }}</div>
+              </div>
+
+
           </div>
         </div>
-
       </div>
         `,
       data: {
 
         fiddlehead: fiddlehead,
         fh_constants: fh_constants,
+        synth: fiddlehead.synth,
+        params: params,
         song_name: 'untitled', //user set
         mode: 'Sequence', //user determined
         modes: ['Sequence', 'Arrangement', 'Synthesizer', 'User'],
@@ -240,7 +296,7 @@ window.onload = function () {
             return Math.round(vol+6, 1)
         },
         set: function (newValue) {
-          this.fiddlehead.synth.volume.volume.value = newValue - 6;
+          this.fiddlehead.synth.volume.volume.linearRampToValueAtTime((newValue - 6), Tone.Transport.Time);
           fiddlehead.log.push('volume changed')
 
           return newValue;
@@ -252,14 +308,22 @@ window.onload = function () {
           },
           set: function(newValue) {
             console.log(newValue)
-            this.fiddlehead.setCurrentMeasureLength(newValue)
+            this.fiddlehead.measure_length = newValue;
+            this.fiddlehead.setCurrentMeasureLength(newValue);
+            return this.fiddlehead.measure_length;
           },
         },
         song_state: function() {
           return this.playing? 'playing':'stopped'
         },
         env_time_array: function() {
-          return linearRange(0.1, 1, 10);
+          let array = []
+          for (let i = 1; i< 11; i++){
+            let num = i/10;
+            array.push(num);
+          }
+
+          return array
         },
         play_pause_icon: function () {
           return this.playing? '❙❙':'■';
@@ -267,10 +331,12 @@ window.onload = function () {
         currentArrangementLength: {
           get: function () {
             console.log(this.fiddlehead.sequences.length)
-            return this.fiddlehead.sequences.length
+            return this.fiddlehead.arrangement_length;
           },
           set: function (newValue) {
+            this.fiddlehead.arrangement_length = newValue;
             this.fiddlehead.setArrangementLength(newValue)
+            return this.fiddlehead.arrangement_length
           }
         },
         oscillator_type: {
@@ -301,15 +367,39 @@ window.onload = function () {
         },
         set: function(newValue) {
           this.fiddlehead.bpm = this.bpm_slider_value
-          Tone.Transport.bpm = this.fiddlehead.bpm;
           return this.fiddlehead.bpm
         }
       },
       message: function () {
           //status messages
             return this.fiddlehead.log[fiddlehead.log.length-1]
+      },
+      oscillator_type: {
+        get: function (){
+          let type = this.fiddlehead.synth.oscillator.type;
+          return type
+      },
+      set: function (newValue) {
+        this.fiddlehead.synth.oscillator.type = newValue;
+        this.fiddlehead.log.push(`osc type set to ${newValue}`)
+        return newValue;
         }
-      }
+      },
+      curr_beat: function() {
+        let beat = (this.fiddlehead.beat);
+        beat = beat === 0? this.fiddlehead.measure_length : beat
+        console.log(this.fiddlehead.beat)
+        console.log(this.fiddlehead.measure_length)
+        return beat
+      },
+      curr_meas: function() {
+        let meas = (this.fiddlehead.measure);
+        meas = meas === 0? this.fiddlehead.arrangement_length : meas
+        // console.log(this.fiddlehead.beat)
+        // console.log(this.fiddlehead.measure_length)
+        return meas
 
+      }
+    }
   })
 }
