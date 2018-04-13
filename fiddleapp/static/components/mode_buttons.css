@@ -1,14 +1,17 @@
 .mode_box {
   position:relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   text-align: left;
   /* border: 1px solid black; */
   /* top: -%; */
   width: 200px;
 
 }
-
+.bpm_sl {
+  position: relative;
+  left: 450px;
+}
 .positioner {
   position: relative;
   display: flex;
@@ -22,11 +25,10 @@
   /* margin: 50px; */
   display: flex;
   position: absolute;
-  height: 50px;
-  top: -25px;
-  /* left: 84px; */
+  /* height: 50px; */
+  top: 25px;
+  left: 34px;
   /* border: 1px solid black; */
-
   /* width: 110px; */
 }
 
@@ -40,7 +42,88 @@
   line-height: 30px;
 }
 .mode_bt >label {
+  font-family: monospace;
+  font-style: bolder;
+  position: relative;
+  top: 0px;
+  left: -20px;
+  transform: rotate(45deg);
+  font-size: 12px;
+}
+.v_selector_box {
+  font-size: 16px;
+  font-style: bold;
+  font-family: sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* background-color: rgba(36, 41, 47, 0.2); */
+  width: 200px;
+  height: 70px;
+  border-radius: 10px;
+  left: -100px;
+  /* top: -70px; */
+  /* border: 1px solid rgba(36, 41, 47, 0.4); */
+  color: rgb(2, 3, 3);
+
+  /* text-shadow: 1px 1px 2px black, 0 0 20px rgb(235, 235, 235); */
+}
+.view_arranger {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+}
+.view_select {
+  position: relative;
+  transform: rotate(-45deg);
+  /* left: -200px; */
+  margin: 10px;
+  width: 20px;
+  height: 10px;
+  border: 2px solid #010101;
+  background: #383e17;
+  border-radius: 30px;
+  line-height: 30px;
+}
+.view_select:hover {
+  cursor: pointer;
+  filter: brightness(2);
+}
+
+
+.view_select >label {
   position: relative;
   transform: rotate(45deg);
-  font-size: 10px;
+  font-size: 13px;
+}
+.view_select.on {
+  background-color: green;
+}
+.beat_prop_select {
+  display: flex;
+  flex-direction: row;
+  color: white;
+  text-align: center;
+  /* display: flex; */
+}
+.select {
+  text-align: center;
+  border: 1px solid black;
+  color: black;
+  /* background-color: orange; */
+  height: 16px;
+  justify-content: center;
+  /* width: 40px; */
+  /* border: 2px solid black; */
+  font-family: monospace;
+  text-shadow: 0px 1px 0px grey;
+  /* font-weight: bold; */
+  background: rgba(60, 60, 200, 0.9);
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  /* border: 1px outset black; */
+  box-shadow: 2px 2px  black, inset -1px -2px 2px 0.1px;
 }

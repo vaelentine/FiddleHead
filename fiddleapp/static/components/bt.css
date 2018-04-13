@@ -2,11 +2,9 @@
   border: 1px solid black;
   position: relative;
   margin:auto;
-  left: 150px;
+  /* left: 150px; */
 }
-.slot {
-  left: 200px;
-}
+
 .fh_bt {
   user-select: none;
   text-align: center;

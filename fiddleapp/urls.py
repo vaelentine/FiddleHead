@@ -8,5 +8,6 @@ app_name = 'fiddleapp'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('api/', views.api, name='api')
+    path('api/', views.api, name='api'),
+    path('api/song_list/', views.SongList.as_view()),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

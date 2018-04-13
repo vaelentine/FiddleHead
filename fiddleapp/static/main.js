@@ -56,6 +56,7 @@ const fh_constants = {
   },
   filter: {
     types: ['lowpass', 'highpass', 'bandpass'],
+    frequency: 500,
     rolloffs: [-12, -24],
     Q: {min:0, max:6},
   },
@@ -153,14 +154,19 @@ class Instrument {
   patchNodes() {
     //attach envelope to
     this.filter_envelope.connect(this.filter.frequency);
-    this.oscillator.connect(this.amplifier);
+    // this.oscillator.connect(this.amplifier);
     this.amplifier.connect(this.distortion);
     this.distortion.connect(this.filter);
     this.filter.connect(this.delay);
     this.delay.connect(this.reverb);
     this.reverb.connect(this.volume);
     this.volume.toMaster();
-
+  }
+  decouple_osc() {
+    return this.oscillator.disconnect(this.amplifier);
+  }
+  reconnect_osc() {
+    return this.oscillator.connect(this.amplifier);
   }
   LFODestination(dest) {
     this.lfo.disconnect(this.lfo_dest)
@@ -178,18 +184,16 @@ class Instrument {
     }
   }
   playNote(note_obj) {
-    this.oscillator.stop(Tone.time)
+    // this.oscillator.stop(Tone.time)
     let n = note_obj;
     let time = Tone.time;
     let dynamics = ['pp', 'p', 'mp', 'mf', 'f', 'ff'];
     let instrument = this;
     let note = n.note + (n.octave);
-    console.log(note);
-
-    this.oscillator.frequency.value = note;
+    let velo = dynamics.indexOf(n.velocity)/10
+    // console.log(note);
     // n.velocity = dynamics.includes(n.velocity)? dynamics.indexOf(n.velocity) : n.velocity;
     // // instrument.oscillator.start(time);
-    this.oscillator.start(Tone.time)
 
     // this.oscillator.volume.exponentialRampToValueAtTime(0, n.duration);
     // .stop(`+${n.duration}`);
@@ -199,7 +203,8 @@ class Instrument {
     // amp.toMaster();
     // osc.start().stop('+2n');
     // amp.triggerAttackRelease('C4','2n');
-    this.filter_envelope.triggerAttackRelease(n.duration, Tone.time);
+    this.oscillator.frequency.value = note;
+    this.filter_envelope.triggerAttackRelease(time, n.duration, velo);
     this.amplifier.triggerAttackRelease(note, n.duration, Tone.time);
 
     // this.oscillator.stop(4);
@@ -213,7 +218,6 @@ class Instrument {
   serialize() {
     //return an object preset for saving to the server
     return {
-      preset_name : this.preset_name,
       oscillator: {
         type: this.oscillator.type,
       },
@@ -252,39 +256,38 @@ class Instrument {
       }
     }
   }
+
   deserialize(object) {
-    this.preset_name = object.preset_name;
-    this.oscillator.type = object.oscillator.type;
-    this.amplifier.attack = object.amplifier.attack;
-    this.amplifier.decay = object.amplifier.decay;
-    this.amplifier.sustain = object.amplifier.sustain;
-    this.amplifier.release = object.amplifier.release;
+    this.oscillator.type = object.oscillator_type;
+    this.amplifier.attack = object.amplifier_attack;
+    this.amplifier.decay = object.amplifier_decay;
+    this.amplifier.sustain = object.amplifier_sustain;
+    this.amplifier.release = object.amplifier_release;
     this.distortion.distortion = object.distortion;
-    this.filter.type = object.filter.type;
-    this.filter.rolloff = object.filter.rolloff;
-    this.filter.Q = object.filter.Q;
-    this.filter_envelope.attack = object.filter_envelope.attack;
-    this.filter_envelope.attack = object.filter_envelope.attack;
-    this.filter_envelope.decay = object.filter_envelope.decay;
-    this.filter_envelope.sustain = object.filter_envelope.sustain;
-    this.filter_envelope.release = object.filter_envelope.release;
-    this.filter_envelope.baseFrequency = object.filter_envelope.baseFrequency;
-    this.filter_envelope.octaves = object.filter_envelope.octaves
-    this.filter_envelope.attackCurve = object.filter_envelope.attackCurve;
-    this.filter_envelope.releaseCurve = this.filter_envelope.releaseCurve;
-    this.filter_envelope.exponent = object.this.filter_envelope.exponent;
-    this.delay.delayTime = object.delay.delayTime;
-    this.delay.feedback = object.delay.feedback;
-    this.delay.wet = object.delay.wet;
-    this.reverb.roomSize = object.reverb.roomSize;
-    this.reverb.dampening = object.reverb.dampening;
-    this.reverb.wet = object.reverb.wet;
+    this.filter.type = object.filter_type;
+    this.filter.rolloff = object.filter_rolloff;
+    this.filter.Q = object.filter_Q;
+    this.filter.frequency = object.filter_frequency;
+    this.filter_envelope.attack = object.filter_envelope_attack;
+    this.filter_envelope.decay = object.filter_envelope_decay;
+    this.filter_envelope.sustain = object.filter_envelope_sustain;
+    this.filter_envelope.release = object.filter_envelope_release;
+    this.filter_envelope.baseFrequency = object.filter_envelope_baseFrequency;
+    this.filter_envelope.octaves = object.filter_envelope_octaves
+    this.filter_envelope.exponent = object.this.filter_envelope_exponent;
+    this.delay.delayTime = object.delay_delayTime;
+    this.delay.feedback = object.delay_feedback;
+    this.delay.wet = object.delay_wet;
+    this.reverb.roomSize = object.reverb_roomSize;
+    this.reverb.dampening = object.reverb_dampening;
+    this.reverb.wet = object.reverb_wet;
   }
 
 }
 
 class SongManager {
   constructor() {
+    this.loaded_songs =[];
     this.measure_length = 8;
     this.arrangement_length = 1;
     this.log = [];
@@ -302,6 +305,8 @@ class SongManager {
     this.synth = new Instrument();
     this.time = 0;
     this.addSequence()
+    this.last_time = Date.now()
+    this.updateSongClock = this.updateSongClock.bind(this);
   }
   addSequence() {
     //initializes a default sequence, adds to end of list
@@ -333,17 +338,7 @@ class SongManager {
   getBeatValues(seq_index, beat_index){
     return this.sequences[sequence_index][beat_index];
   }
-  loadPresetList() {
-    axios({
-      method: 'GET',
-      url: '/fiddleapp/presets/',
-    }).then(result => {
-      console.log(result);
-      this.log.push(`preset list loaded`)
-    }).catch(error => {
-      console.log(error);
-    });
-  }
+
   savePresetToCurrSeq(){
     let preset = this.synth.serialize();
     this.getCurrentSequenceData().synth_preset = preset;
@@ -357,7 +352,7 @@ class SongManager {
 
   }
   checkLoadPreset(seq_index){
-    console.log('seq_index' + seq_index)
+    // console.log('seq_index' + seq_index)
     return this.sequences[seq_index].load_query;
   }
   getCurrentSequenceIndex() {
@@ -394,20 +389,19 @@ class SongManager {
       while (beats_num < meas.length) {
         meas.pop()
         this.log.push(`beat removed`)
-
       }
     }
     return this.getCurrentMeasureLength()
   }
   set currentMeasureLength(beats_num) {
     let meas = this.sequences[this.getCurrentSequenceIndex()]
-    while (beats > this.getCurrentMeasureLength()) {
+    while (beats_num > this.measure_length) {
       // remove extra beats
       meas.pop()
       this.log.push(`beat removed`)
 
     }
-    while (beats < this.getCurrentMeasureLength()) {
+    while (beats_num < this.measure_length) {
       this.addBeat(meas);
       this.log.push(`beat added`)
 
@@ -439,14 +433,23 @@ class SongManager {
     return this.arrangement_length;
   }
   updateSongClock() {
+    let now = Date.now()
     let fh = this;
+    // console.log(this);
+    console.log(this);
+
     if (fh.playing) {
-      let timer = setTimeout(function() {
-        fh.setArrangementLength(fh.arrangement_length)
-        fh.setCurrentMeasureLength(fh.measure_length)
+      // let timer = setTimeout(function() {
+        // fh.updateSongClock(); //callback
+        requestAnimationFrame(this.updateSongClock);
+
+        let elapsed_time = now - fh.last_time;
+        if (elapsed_time > 60000/fh.internal_bpm) {
+        fh.last_time = now - (elapsed_time % 60000/fh.internal_bpm)
         let seq_i = fh.arrangement[fh.measure]
         let seq = fh.sequences[ seq_i ];
         fh.beat = fh.beat % seq.beats.length;
+
         //load preset
         if (fh.beat === 0){
           fh.measure = fh.measure % fh.sequences.length;
@@ -454,19 +457,15 @@ class SongManager {
             fh.synth.deserialize(seq.preset);
           }
         }
-
         //play note
         fh.internal_bpm = fh.bpm;
-        Tone.Transport.bpm.value = fh.bpm - 20;
+        Tone.Transport.bpm.value = fh.bpm;
 
-        console.log(fh.bpm);
-        console.log(fh.internal_bpm);
-        // seq_i =  seq_i % fh.arrangement_length;
-        // seq = fh.sequences[ seq_i ];
         fh.playNote(seq.beats[fh.beat]);
+        fh.setArrangementLength(fh.arrangement_length)
+        fh.setCurrentMeasureLength(fh.measure_length)
         //set clock to next increment
         fh.beat += 1;
-        fh.updateSongClock(); //callback
         if (fh.beat > seq.beats.length - 1) {
 
           fh.beat = 0; //reset at bar end
@@ -482,9 +481,10 @@ class SongManager {
             return fh.playing
           }
         }
-      }, 60000/this.internal_bpm);
-    }
+      // }, 60000/this.internal_bpm);
+    } //done doing all the stuff
   }
+}
   updateTimeClock() {
     if (this.playing) {
       let timer = setTimeout( function () {
@@ -498,10 +498,14 @@ class SongManager {
     this.playing = !this.playing;
     this.log.push('play state changed')
     if (this.playing){
+      this.synth.reconnect_osc()
+      this.synth.oscillator.start(Tone.time)
       this.updateSongClock()
     }
+    else {
+      return this.synth.decouple_osc()
+    }
       // updateTimeClock();
-
   }
   playNote(note_obj) {
     if (!note_obj.mute) {
@@ -520,23 +524,34 @@ class SongManager {
     this.beat = 0;
     let n = this.measure + 1
     this.measure = n % this.sequences.length;
-    console.log('seek forward')
+    this.log.push('seek forward')
     return this.measure
   }
   seekPrevious() {
     this.beat = 0;
     let n = this.measure - 1;
+    this.log.push('seek previous')
+
     this.measure = n<0? this.sequences.length-1 : n;
     // this.measure = n % this.sequences.length;
     return this.measure
   }
-  saveSong() {
-    return {
-      title: this.title,
-      sequences: this.sequences,
-      bpm: this.bpm,
-      arrangement: this.arrangement
-    }
+  saveSong(name) {
+    this.serializeSong()
+    axios({
+      method: 'POST',
+      url: '/fiddleapp/api/song_list/',
+      data: {
+        title: this.title,
+        sequences: this.sequences,
+        bpm: this.bpm
+      },
+    }).then(result => {
+      this.loaded_songs.push(result)
+      console.log(result);
+    }).catch(error => {
+      console.log(error);
+    });
   }
   loadSong(object) {
     this.title = object.title;
@@ -547,26 +562,28 @@ class SongManager {
   getSongList() {
     axios({
       method: 'GET',
-      url: '/fiddleapp/songs/',
+      url: '/fiddleapp/api/song_list/',
     }).then(result => {
+      this.loaded_songs.push(result)
       console.log(result);
     }).catch(error => {
       console.log(error);
     });
   }
-  getPresets() {
-    axios({
-      method: 'GET',
-      url: '/fiddleapp/songs/',
-    }).then(result => {
-      console.log(result);
-    }).catch(error => {
-      console.log(error);
-    });
+  mapIndicesToSequences(){
+//for each sequence add seqArr{sequenceIndex:arrangmentIndex}
+    for (let i = 0; i< this.sequences.length; i++){
+      this.sequences[i].sequence_index =i;
+      this.sequences[i].arrangement_index = this.arrangement[i];
+    }
+    return this.sequences
   }
   serializeSong() {
+    this.mapIndicesToSequences()
     return {
       title: this.title,
+      sequences: this.sequences,
+      bpm: this.bpm
     }
   }
   loadCurrentPreset() {
@@ -578,7 +595,7 @@ fiddlehead.log.push('Welcome!')
 for (let i = 0; i < fiddlehead.sequences[0].beats.length; i++){
   fiddlehead.sequences[0].beats[i].mute = false;
 }
-
+fiddlehead.getSongList()
 params = fiddlehead.synth.serialize(fiddlehead)
 // fiddlehead.addBeat(fiddlehead.getCurrentSequenceIndex());
 // console.log(fiddlehead.getCurrentSequenceData());

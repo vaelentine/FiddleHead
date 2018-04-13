@@ -11,7 +11,7 @@ body {
     100%{background-color:rgb(215, 120, 131)}
 }
 @keyframes Gradient {
-  0%{background-color:rgb(210, 165, 136)}
-  50%{background-color:rgb(15, 189, 224)}
-  100%{background-color:rgb(215, 120, 131)}
+  0%{background-color:rgb(244, 149, 89)}
+  50%{background-color:rgb(138, 15, 224)}
+  100%{background-color:rgb(215, 71, 88)}
 }

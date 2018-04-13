@@ -1,16 +1,14 @@
 Vue.component('slider', {
-  props: ['min', 'max', 'value', 'step', 'display', 'name'],
+  props: ['label', 'parameter', 'step', 'min', 'max'],
   template:
-    `<div class="slider_container">
-      <input class="slider"
-        type="range"
-        v-model.number="value"
-          :min="min" :max="max" :step="step" :value="value"/>
-          <input class="num_display" v-model.number="bpm" type="text" :value="value"   />
-      </div>`,
-  data() {
+    `  <div class="synth_setting_container">
+        <label> {{ label }}: {{ parameter }} </label>
+        <input type="range" v-model:number="parameter" :min="0.01" :step="step" :max="2" style="width:500px">
+      <input class="num_display" type="2text" :for="label" name="display" oninput="parameter=display.value" />
+    </div>
+    `,
+  data: function () {
     return {
-      value: value
     }
   }
 })

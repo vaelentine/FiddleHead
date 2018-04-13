@@ -36,5 +36,7 @@
 
 
 .led.on {
+  left: 0px;
+  top: 0px;
   filter: brightness(100%);
 }

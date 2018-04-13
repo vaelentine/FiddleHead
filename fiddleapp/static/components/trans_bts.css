@@ -21,11 +21,9 @@
   border-width: 1.5em 0 1.5em 3em;
   border-color: transparent transparent transparent #000;
 }
-.bt_cont {
-}
 .slot {
   position: relative;
-  left: 50px;
+  left: 400px;
   width: auto;
   display: flex;
   justify-content: center;
